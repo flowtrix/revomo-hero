@@ -2065,5 +2065,734 @@
         </defs>
       </svg>
     </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/TextPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/DrawSVGPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/MorphSVGPlugin.min.js"></script>
+    
+    <script>
+// Check if GSAP is loaded
+if (typeof gsap === 'undefined') {
+    console.error('GSAP is not loaded. Please add GSAP CDN to your Webflow project.');
+}
+
+// Global variables for premium plugins (will be undefined if not loaded)
+let SplitText, MorphSVGPlugin, DrawSVGPlugin, ScrollTrigger;
+
+// Function to check and register available GSAP plugins
+function initializeGSAPPlugins() {
+    // Check for plugins loaded from CDN
+    if (window.SplitText) {
+        SplitText = window.SplitText;
+        gsap.registerPlugin(SplitText);
+    }
+
+    if (window.MorphSVGPlugin) {
+        MorphSVGPlugin = window.MorphSVGPlugin;
+        gsap.registerPlugin(MorphSVGPlugin);
+    }
+
+    if (window.DrawSVGPlugin) {
+        DrawSVGPlugin = window.DrawSVGPlugin;
+        gsap.registerPlugin(DrawSVGPlugin);
+    }
+
+    if (window.ScrollTrigger) {
+        ScrollTrigger = window.ScrollTrigger;
+        gsap.registerPlugin(ScrollTrigger);
+    }
+
+    console.log('Available GSAP plugins:', {
+        SplitText: !!SplitText,
+        MorphSVGPlugin: !!MorphSVGPlugin,
+        DrawSVGPlugin: !!DrawSVGPlugin,
+        ScrollTrigger: !!ScrollTrigger
+    });
+}
+
+// Main Animation Timeline Class
+class RevomoAnimationSystem {
+    constructor() {
+        this.timeline = gsap.timeline();
+        this.pluginsLoaded = false;
+        this.init();
+    }
+
+    init() {
+        // Initialize plugins first
+        initializeGSAPPlugins();
+        this.pluginsLoaded = true;
+
+        // Wait for DOM to be fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.setupAnimations());
+        } else {
+            this.setupAnimations();
+        }
+    }
+
+    setupAnimations() {
+        this.debugElements();
+        this.createMainTimeline();
+        this.createAdvancedSVGAnimations();
+        this.createDollarAnimations();
+        this.createScrollTriggerAnimations();
+        this.createCircularProgressAnimation();
+        this.optimizePerformance();
+    }
+
+    debugElements() {
+        // Validation of SVG elements
+        const elementsToCheck = [
+            { name: 'Inner Hero', selector: '#inner-hero' },
+            { name: 'Revomo Animation', selector: '#revomo-animation' },
+            { name: 'Particle Container', selector: '#particle-container' },
+            { name: 'Metric Logo', selector: '.metric-logo' },
+            { name: 'Background', selector: '.background' },
+            { name: 'Metric Background', selector: '.metric-background' },
+            { name: 'Stroked Metric', selector: '.stroked-metric' },
+            { name: 'Dollar Elements', selector: '.dollar' }
+        ];
+
+        // Element validation
+        elementsToCheck.forEach(item => {
+            const elements = document.querySelectorAll(item.selector);
+            if (elements.length === 0) {
+                console.warn(`No elements found for: ${item.name} (${item.selector})`);
+            } else {
+                console.log(`Found ${elements.length} elements for: ${item.name}`);
+            }
+        });
+    }
+
+    createMainTimeline() {
+        const tl = this.timeline;
+
+        // Set transform origin to center for zoom-out effect
+        gsap.set("#revomo-animation", {
+            transformOrigin: "center center"
+        });
+
+        // Initial setup - start with the entire SVG at scale 0
+        tl.set("#revomo-animation", {
+            scale: 0,
+            opacity: 1,
+            transformOrigin: "center center"
+        });
+
+        tl.set("#rotating-lines", {
+            opacity: 0
+        });
+
+        // Main zoom-out reveal animation - 2 seconds duration
+        tl.to("#revomo-animation", {
+            scale: 1,
+            duration: 2,
+            ease: "power2.out",
+            transformOrigin: "center center",
+            delay: 0.5
+        });
+
+        tl.to("#rotating-lines", {
+            opacity: 1,
+            duration: 0.1,
+            ease: "power2.out",
+        });
+    }
+
+    createAdvancedSVGAnimations() {
+        // Create advanced timeline for SVG elements
+        const advancedTl = gsap.timeline({ delay: 2.8 });
+
+        // 1. Stagger reveal-in animation for #inner-hero
+        this.createStaggerRevealAnimation(advancedTl);
+
+        // 2. AutoAlpha reveal animations in sequence
+        this.createAutoAlphaSequence(advancedTl);
+
+        // 3. Text animations
+        this.createTextAnimations(advancedTl);
+
+        return advancedTl;
+    }
+
+    createStaggerRevealAnimation(tl) {
+        const innerHero = document.querySelector("#inner-hero");
+
+        if (!innerHero) {
+            return;
+        }
+
+        // Get all direct children of inner-hero for stagger effect
+        const staggerElements = Array.from(innerHero.children);
+
+        // Set initial state - hidden and scaled down
+        gsap.set(staggerElements, {
+            autoAlpha: 0,
+            scale: 0.8,
+            y: 30,
+            transformOrigin: "center center"
+        });
+
+        // Stagger reveal animation
+        tl.to(staggerElements, {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: {
+                amount: 1.2,
+                from: "start",
+                ease: "power2.out"
+            },
+            ease: "back.out(1.7)"
+        }, "stagger-start");
+    }
+
+    createAutoAlphaSequence(tl) {
+        // Animate various elements with autoAlpha
+        const elementGroups = [
+            { selector: '.metric-logo', delay: 0 },
+            { selector: '.background', delay: 0.3 },
+            { selector: '.metric-background, .metric-background-gradient', delay: 0.6 }
+        ];
+
+        elementGroups.forEach(group => {
+            const elements = document.querySelectorAll(group.selector);
+            if (elements.length > 0) {
+                gsap.set(elements, { autoAlpha: 0 });
+                tl.to(elements, {
+                    autoAlpha: 1,
+                    duration: 0.6,
+                    ease: "power2.out"
+                }, `sequence-start+=${group.delay}`);
+            }
+        });
+
+        // Animate path elements with drawing effect or fallback
+        this.createLineChartAnimations(tl);
+        this.createTooltipAnimations(tl);
+    }
+
+    createLineChartAnimations(tl) {
+        const strokedMetricElements = document.querySelectorAll('.stroked-metric');
+        const otherLineChartElements = [
+            ...document.querySelectorAll('.metric'),
+            ...document.querySelectorAll('.metric-line'),
+            ...document.querySelectorAll('.metric-glow'),
+            ...document.querySelectorAll('.metric-glow-light')
+        ];
+
+        // Animate stroked-metric elements
+        if (strokedMetricElements.length > 0) {
+            this.animatePaths(strokedMetricElements, tl, "sequence-start+=0.9", true);
+        }
+
+        // Animate other line chart elements
+        if (otherLineChartElements.length > 0) {
+            this.animatePaths(otherLineChartElements, tl, "sequence-start+=1.1", false);
+        }
+    }
+
+    animatePaths(elements, tl, timing, isStrokedMetric) {
+        const drawingElements = [];
+        const fallbackElements = [];
+
+        elements.forEach((element, index) => {
+            try {
+                // Check if DrawSVG plugin is available and element is a path
+                if (DrawSVGPlugin && element.tagName.toLowerCase() === 'path' && typeof element.getTotalLength === 'function') {
+                    // Set up for DrawSVG animation
+                    if (isStrokedMetric) {
+                        element.setAttribute('stroke-dasharray', '4 4');
+                    }
+
+                    gsap.set(element, {
+                        drawSVG: "0%",
+                        autoAlpha: 1,
+                        strokeWidth: element.getAttribute('stroke-width') || '1.5',
+                    });
+
+                    drawingElements.push(element);
+                } else {
+                    throw new Error('DrawSVG not available or element is not a valid path');
+                }
+            } catch (error) {
+                // Fallback to opacity animation
+                gsap.set(element, { autoAlpha: 0 });
+                fallbackElements.push(element);
+            }
+        });
+
+        // Animate with DrawSVG
+        if (drawingElements.length > 0) {
+            drawingElements.forEach((element, index) => {
+                const staggerDelay = isStrokedMetric ? (index * 0.3) : 0;
+                tl.to(element, {
+                    drawSVG: "100%",
+                    duration: 2.0,
+                    ease: "power2.inOut"
+                }, `${timing}+=${staggerDelay}`);
+            });
+        }
+
+        // Animate fallback elements
+        if (fallbackElements.length > 0) {
+            tl.to(fallbackElements, {
+                autoAlpha: 1,
+                duration: 0.8,
+                stagger: isStrokedMetric ? 0.3 : 0.1,
+                ease: "power2.out"
+            }, timing);
+        }
+    }
+
+    createTooltipAnimations(tl) {
+        const tooltipStrokeElements = [
+            ...document.querySelectorAll('.first-tooltip-stroke'),
+            ...document.querySelectorAll('.second-tooltip-stroke'),
+            ...document.querySelectorAll('.third-tooltip-stroke'),
+            ...document.querySelectorAll('[class*="tooltip-circle"]'),
+            ...document.querySelectorAll('[class*="tooltip-fill"]')
+        ];
+
+        if (tooltipStrokeElements.length > 0) {
+            gsap.set(tooltipStrokeElements, { autoAlpha: 0 });
+            tl.to(tooltipStrokeElements, {
+                autoAlpha: 1,
+                duration: 0.5,
+                stagger: {
+                    amount: 1.0,
+                    from: "start",
+                    ease: "power2.out"
+                },
+                ease: "power2.out"
+            }, "sequence-start+=1.4");
+        }
+    }
+
+    createTextAnimations(tl) {
+        // Get tooltip content elements
+        const tooltipContents = [
+            '.first-tooltip-content',
+            '.second-tooltip-content',
+            '.third-tooltip-content-one',
+            '.third-tooltip-content-two'
+        ];
+
+        tooltipContents.forEach((selector, index) => {
+            const elements = document.querySelectorAll(selector);
+
+            elements.forEach((element) => {
+                if (SplitText && element && element.textContent.trim()) {
+                    this.createSplitTextAnimation(tl, element, index);
+                } else {
+                    this.createFallbackTextAnimation(tl, element, index);
+                }
+            });
+        });
+
+        // Add footer content animation
+        this.createFooterContentAnimation(tl);
+    }
+
+    createSplitTextAnimation(tl, element, index) {
+        try {
+            const splitText = new SplitText(element, {
+                type: "lines,words,chars",
+                linesClass: "split-line",
+                wordsClass: "split-word",
+                charsClass: "split-char"
+            });
+
+            gsap.set(splitText.chars, {
+                autoAlpha: 0,
+                y: 20,
+                scale: 0.8,
+                rotation: 5
+            });
+
+            tl.to(splitText.chars, {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                rotation: 0,
+                duration: 0.4,
+                stagger: {
+                    amount: 0.4,
+                    from: "start",
+                    ease: "power2.out"
+                },
+                ease: "back.out(1.7)",
+                onComplete: () => {
+                    splitText.revert();
+                }
+            }, `sequence-start+=${1.6 + (index * 0.1)}`);
+        } catch (error) {
+            this.createFallbackTextAnimation(tl, element, index);
+        }
+    }
+
+    createFallbackTextAnimation(tl, element, index) {
+        gsap.set(element, {
+            autoAlpha: 0,
+            y: 15,
+            scale: 0.95
+        });
+
+        tl.to(element, {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: "back.out(1.7)"
+        }, `sequence-start+=${1.6 + (index * 0.1)}`);
+    }
+
+    createFooterContentAnimation(tl) {
+        const footerElements = document.querySelectorAll('.footer-content');
+
+        if (footerElements.length === 0) {
+            return;
+        }
+
+        gsap.set(footerElements, {
+            autoAlpha: 0,
+            scale: 0.95
+        });
+
+        tl.to(footerElements, {
+            autoAlpha: 1,
+            scale: 1,
+            duration: 0.6,
+            stagger: {
+                amount: 0.3,
+                from: "start",
+                ease: "power2.out"
+            },
+            ease: "back.out(1.7)"
+        }, "sequence-start+=3.0");
+    }
+
+    createScrollTriggerAnimations() {
+        if (!ScrollTrigger) return;
+
+        ScrollTrigger.create({
+            trigger: "#hero-section",
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+            onUpdate: (self) => {
+                const progress = self.progress;
+                gsap.to("#revomo-animation", {
+                    scale: 1 - (progress * 0.2),
+                    opacity: 1 - (progress * 0.5),
+                    duration: 0.3
+                });
+            }
+        });
+    }
+
+    createDollarAnimations() {
+        const dollarElements = document.querySelectorAll('.dollar');
+
+        if (dollarElements.length === 0) {
+            return;
+        }
+
+        gsap.set(dollarElements, {
+            scale: 0,
+            opacity: 0,
+            transformOrigin: "center center"
+        });
+
+        const dollarTl = gsap.timeline({ delay: 4.5 });
+
+        dollarTl.to(dollarElements, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.8,
+            ease: "back.out(2.5)",
+            stagger: {
+                amount: 0.6,
+                from: "start"
+            }
+        });
+
+        // Create floating animation for each dollar
+        dollarElements.forEach((element, index) => {
+            const moveDistance = 8 + Math.random() * 12;
+            const duration = 2.5 + Math.random() * 1.5;
+            const delay = Math.random() * 1.5;
+
+            gsap.to(element, {
+                x: `+=${Math.random() > 0.5 ? moveDistance : -moveDistance}`,
+                y: `+=${Math.random() > 0.5 ? moveDistance : -moveDistance}`,
+                duration: duration,
+                ease: "sine.inOut",
+                repeat: -1,
+                yoyo: true,
+                delay: delay + 5.5
+            });
+
+            gsap.to(element, {
+                rotation: `+=${(Math.random() - 0.5) * 12}`,
+                duration: duration * 1.2,
+                ease: "sine.inOut",
+                repeat: -1,
+                yoyo: true,
+                delay: delay + 6
+            });
+        });
+
+        return dollarTl;
+    }
+
+    createCircularProgressAnimation() {
+        // Placeholder for circular progress animation
+    }
+
+    optimizePerformance() {
+        gsap.set("#revomo-animation", {
+            force3D: true,
+            transformPerspective: 1000
+        });
+
+        this.cleanup = () => {
+            if (ScrollTrigger && ScrollTrigger.killAll) {
+                ScrollTrigger.killAll();
+            }
+            this.timeline.kill();
+        };
+    }
+}
+
+// Particle System Class
+class ParticleSystem {
+    constructor() {
+        this.container = document.getElementById('particle-container');
+        this.particles = [];
+        this.maxParticles = 80;
+        this.spawnRate = 180;
+        this.minSize = 1.44;
+        this.maxSize = 5;
+        this.shapeTypes = ['circle', 'square', 'star', 'polygon'];
+
+        if (!this.container) {
+            console.warn('Particle container not found');
+            return;
+        }
+
+        this.init();
+    }
+
+    init() {
+        this.startAnimation();
+    }
+
+    createParticle() {
+        const shapeType = this.getRandomShape();
+        const size = this.getRandomSize();
+        const opacity = this.getOpacityBasedOnSize(size);
+
+        let element;
+
+        switch (shapeType) {
+            case 'circle':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                element.setAttribute('r', size / 2);
+                element.setAttribute('cx', 0);
+                element.setAttribute('cy', 0);
+                break;
+
+            case 'square':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                element.setAttribute('width', size);
+                element.setAttribute('height', size);
+                element.setAttribute('x', -size / 2);
+                element.setAttribute('y', -size / 2);
+                break;
+
+            case 'star':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const starPoints = this.createStarPoints(size / 2);
+                element.setAttribute('points', starPoints);
+                break;
+
+            case 'polygon':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const hexPoints = this.createHexagonPoints(size / 2);
+                element.setAttribute('points', hexPoints);
+                break;
+        }
+
+        element.setAttribute('fill', '#ACA0E4');
+        element.setAttribute('opacity', opacity);
+        element.classList.add('particle');
+
+        return {
+            element,
+            size,
+            shapeType,
+            isActive: true
+        };
+    }
+
+    createStarPoints(radius) {
+        const points = [];
+        const outerRadius = radius;
+        const innerRadius = radius * 0.4;
+
+        for (let i = 0; i < 10; i++) {
+            const angle = (i * Math.PI) / 5;
+            const r = i % 2 === 0 ? outerRadius : innerRadius;
+            const x = Math.cos(angle) * r;
+            const y = Math.sin(angle) * r;
+            points.push(`${x},${y}`);
+        }
+
+        return points.join(' ');
+    }
+
+    createHexagonPoints(radius) {
+        const points = [];
+
+        for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI) / 3;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            points.push(`${x},${y}`);
+        }
+
+        return points.join(' ');
+    }
+
+    getRandomShape() {
+        return this.shapeTypes[Math.floor(Math.random() * this.shapeTypes.length)];
+    }
+
+    getRandomSize() {
+        return this.minSize + Math.random() * (this.maxSize - this.minSize);
+    }
+
+    getOpacityBasedOnSize(size) {
+        const sizeRange = this.maxSize - this.minSize;
+        const sizeRatio = (size - this.minSize) / sizeRange;
+        return 0.1 + (sizeRatio * 0.9);
+    }
+
+    spawnParticle() {
+        if (this.particles.length >= this.maxParticles) return;
+
+        const particle = this.createParticle();
+        const x = Math.random() * window.innerWidth;
+        const y = -20;
+
+        gsap.set(particle.element, {
+            x: x,
+            y: y,
+            rotation: Math.random() * 360
+        });
+
+        this.container.appendChild(particle.element);
+        this.particles.push(particle);
+
+        this.animateParticle(particle);
+    }
+
+    animateParticle(particle) {
+        const fallDuration = 4 + Math.random() * 3;
+        const horizontalDrift = (Math.random() - 0.5) * 50;
+        const rotation = Math.random() * 360;
+
+        gsap.to(particle.element, {
+            y: window.innerHeight + 50,
+            x: `+=${horizontalDrift}`,
+            rotation: `+=${rotation}`,
+            duration: fallDuration,
+            ease: "none",
+            onComplete: () => this.removeParticle(particle)
+        });
+    }
+
+    removeParticle(particle) {
+        if (particle.element.parentNode) {
+            particle.element.parentNode.removeChild(particle.element);
+        }
+
+        const index = this.particles.indexOf(particle);
+        if (index > -1) {
+            this.particles.splice(index, 1);
+        }
+    }
+
+    startAnimation() {
+        this.spawnInterval = setInterval(() => {
+            this.spawnParticle();
+        }, this.spawnRate);
+
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => this.spawnParticle(), i * 100);
+        }
+    }
+
+    destroy() {
+        if (this.spawnInterval) {
+            clearInterval(this.spawnInterval);
+        }
+        this.particles.forEach(particle => this.removeParticle(particle));
+    }
+}
+
+// Initialize function
+function initializeRevomoAnimation() {
+    console.log('Initializing Revomo Animation System...');
+
+    // Check if GSAP is available
+    if (typeof gsap === 'undefined') {
+        console.error('GSAP is not loaded. Please add GSAP CDN scripts to your Webflow project.');
+        return;
+    }
+
+    // Initialize particle system
+    const particleSystem = new ParticleSystem();
+
+    // Initialize animation system
+    const animationSystem = new RevomoAnimationSystem();
+
+    // Make systems globally accessible for debugging
+    window.particleSystem = particleSystem;
+    window.animationSystem = animationSystem;
+
+    console.log('Revomo Animation System initialized successfully');
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (particleSystem && particleSystem.destroy) {
+            particleSystem.destroy();
+        }
+        if (animationSystem && animationSystem.cleanup) {
+            animationSystem.cleanup();
+        }
+    });
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeRevomoAnimation);
+} else {
+    initializeRevomoAnimation();
+}
+
+// Also hook into Webflow's ready event if available
+if (typeof Webflow !== 'undefined') {
+    Webflow.push(initializeRevomoAnimation);
+}
+
+console.log('Webflow compatible script loaded');
+</script>
   </body>
 </html>
