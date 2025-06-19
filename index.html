@@ -2123,7 +2123,7 @@ class RevomoAnimationSystem {
 
     async init() {
         // Load premium plugins first
-        await loadPremiumPlugins();
+        await initializeGSAPPlugins();
         this.pluginsLoaded = true;
 
         // Wait for DOM to be fully loaded
