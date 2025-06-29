@@ -766,16 +766,20 @@ class RevomoAnimationSystem {
             return;
         }
 
-        // PERFORMANCE OPTIMIZATION: Hover effects will only work after pointer events are enabled
-        // This happens automatically at "stagger-start+=4.0" in the 3D animation timeline
+        // Force enable pointer events immediately for iframe compatibility
+        gsap.set(backgroundFigures, {
+            pointerEvents: "auto",
+            cursor: "pointer"
+        });
 
         // Enhanced hover effects with GSAP for smoother animations
+        // Also support touch events for mobile and iframe compatibility
         backgroundFigures.forEach((figure, index) => {
-            // Mouse enter event
-            figure.addEventListener('mouseenter', () => {
+
+            const handleHoverEnter = () => {
                 // Animate the hovered figure
                 gsap.to(figure, {
-                    autoAlpha: 1, // Use autoAlpha for consistency
+                    autoAlpha: 1,
                     scale: 1.05,
                     duration: 0.3,
                     ease: "power2.out"
@@ -785,19 +789,18 @@ class RevomoAnimationSystem {
                 backgroundFigures.forEach((otherFigure, otherIndex) => {
                     if (otherIndex !== index) {
                         gsap.to(otherFigure, {
-                            autoAlpha: 0.1, // Use autoAlpha for consistency
+                            autoAlpha: 0.1,
                             duration: 0.3,
                             ease: "power2.out"
                         });
                     }
                 });
-            });
+            };
 
-            // Mouse leave event
-            figure.addEventListener('mouseleave', () => {
+            const handleHoverLeave = () => {
                 // Reset the hovered figure
                 gsap.to(figure, {
-                    autoAlpha: 0.2, // Use autoAlpha for consistency
+                    autoAlpha: 0.2,
                     scale: 1,
                     duration: 0.3,
                     ease: "power2.out"
@@ -807,14 +810,44 @@ class RevomoAnimationSystem {
                 backgroundFigures.forEach((otherFigure, otherIndex) => {
                     if (otherIndex !== index) {
                         gsap.to(otherFigure, {
-                            autoAlpha: 0.2, // Use autoAlpha for consistency
+                            autoAlpha: 0.2,
                             duration: 0.3,
                             ease: "power2.out"
                         });
                     }
                 });
-            });
+            };
+
+            // Mouse events for desktop
+            figure.addEventListener('mouseenter', handleHoverEnter, { passive: true });
+            figure.addEventListener('mouseleave', handleHoverLeave, { passive: true });
+
+            // Touch events for mobile and iframe compatibility
+            figure.addEventListener('touchstart', handleHoverEnter, { passive: true });
+            figure.addEventListener('touchend', handleHoverLeave, { passive: true });
+
+            // Focus events for accessibility and iframe compatibility
+            figure.addEventListener('focus', handleHoverEnter, { passive: true });
+            figure.addEventListener('blur', handleHoverLeave, { passive: true });
+
+            // Make figures focusable for iframe interaction
+            figure.setAttribute('tabindex', '0');
+            figure.setAttribute('role', 'button');
+            figure.setAttribute('aria-label', `Interactive element ${index + 1}`);
         });
+
+        // Add global event listener to detect iframe interaction capability
+        document.addEventListener('mousemove', () => {
+            // Force enable interactions if mouse movement is detected
+            backgroundFigures.forEach(figure => {
+                gsap.set(figure, {
+                    pointerEvents: "auto",
+                    cursor: "pointer"
+                });
+            });
+        }, { once: true, passive: true });
+
+        console.log('Background layer hover effects setup complete with iframe compatibility');
     }
 
     createScrollTriggerAnimations() {
@@ -1396,6 +1429,43 @@ class DiagonalParticleSystem {
     }
 }
 
+// Debug function to verify iframe interactions
+function debugIframeInteractions() {
+    const backgroundFigures = document.querySelectorAll('.background-layer-figure');
+
+    console.log('🔍 Iframe Interaction Debug:');
+    console.log(`Found ${backgroundFigures.length} background figures`);
+
+    backgroundFigures.forEach((figure, index) => {
+        const styles = window.getComputedStyle(figure);
+        console.log(`Figure ${index + 1}:`, {
+            pointerEvents: styles.pointerEvents,
+            cursor: styles.cursor,
+            position: styles.position,
+            zIndex: styles.zIndex,
+            opacity: styles.opacity
+        });
+
+        // Add visual debug indicator
+        figure.addEventListener('mouseenter', () => {
+            console.log(`✅ Hover detected on figure ${index + 1}`);
+        });
+    });
+
+    // Test iframe detection
+    const isInIframe = window.self !== window.top;
+    console.log(`Running in iframe: ${isInIframe}`);
+
+    return {
+        figureCount: backgroundFigures.length,
+        isInIframe,
+        interactionsEnabled: backgroundFigures.length > 0
+    };
+}
+
+// Make debug function globally available
+window.debugIframeInteractions = debugIframeInteractions;
+
 // Single initialization function to prevent duplicates
 async function initializeRevomoAnimation() {
     // Prevent multiple initializations
@@ -1436,6 +1506,14 @@ async function initializeRevomoAnimation() {
                 globalDiagonalParticleSystem.destroy();
             }
         });
+
+        // Auto-debug in iframe context
+        setTimeout(() => {
+            if (window.self !== window.top) {
+                console.log('🎯 Iframe detected - running interaction debug');
+                debugIframeInteractions();
+            }
+        }, 5000);
 
         console.log('Revomo animation system initialized successfully');
     } catch (error) {

@@ -30,8 +30,8 @@
 
 body {
 
-    /* background: #050A12; */
-    background: transparent;
+    background: #050A12;
+    /* background: transparent; */
     font-family: 'InterDisplay', sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
@@ -204,8 +204,8 @@ body {
     backface-visibility: hidden;
     /* Prevent flickering on transform */
     transform-style: preserve-3d;
-    right: -450px;
     /* Ensure proper 3D context */
+    right: -450px;
 }
 
 /* Particle styling for better performance and visibility */
@@ -215,6 +215,39 @@ body {
     backface-visibility: hidden;
     transform-style: preserve-3d;
     contain: layout style paint;
+}
+
+/* Iframe-specific overrides for embedded content */
+.background-layer-figure {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    touch-action: manipulation !important;
+    /* Force interaction capability in iframe */
+}
+
+.background-layer-figure:hover {
+    opacity: 1 !important;
+    transform: scale(1.05) !important;
+    transition: all 0.3s ease-in-out !important;
+    /* Ensure hover effects work in iframe */
+}
+
+/* Force iframe interaction capability */
+body {
+    pointer-events: auto !important;
+    user-select: none !important;
+    touch-action: manipulation !important;
+}
+
+.background-layer {
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 10 !important;
+    /* Ensure background layer is interactive in iframe */
 }
 
 /* Accessibility: Respect user's motion preferences */
