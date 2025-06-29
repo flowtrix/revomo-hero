@@ -1,0 +1,1410 @@
+import './style.css'
+
+import gsap from "gsap";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
+import { Physics2DPlugin } from "gsap/Physics2DPlugin";
+import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+
+// Global variables for premium plugins
+let SplitText, MorphSVGPlugin;
+
+// Global flag to prevent multiple initializations
+let isInitialized = false;
+let globalAnimationSystem = null;
+let globalParticleSystem = null;
+let globalDiagonalParticleSystem = null;
+
+// Async function to load premium plugins
+async function loadPremiumPlugins() {
+    try {
+        const splitTextModule = await import("gsap/SplitText");
+        SplitText = splitTextModule.SplitText;
+    } catch (error) {
+        // SplitText plugin not available, using fallback animations
+    }
+
+    try {
+        const morphModule = await import("gsap/MorphSVGPlugin");
+        MorphSVGPlugin = morphModule.MorphSVGPlugin;
+    } catch (error) {
+        // MorphSVG plugin not available
+    }
+
+    // Register available plugins
+    const availablePlugins = [InertiaPlugin, Physics2DPlugin, DrawSVGPlugin];
+    if (SplitText) availablePlugins.push(SplitText);
+    if (MorphSVGPlugin) availablePlugins.push(MorphSVGPlugin);
+
+    gsap.registerPlugin(...availablePlugins);
+
+    // Register ScrollTrigger from CDN if available
+    if (window.ScrollTrigger) {
+        gsap.registerPlugin(ScrollTrigger);
+    }
+
+    return { SplitText, MorphSVGPlugin };
+}
+
+// Main Animation Timeline Class
+class RevomoAnimationSystem {
+    constructor(particleSystem) {
+        this.timeline = gsap.timeline();
+        this.pluginsLoaded = false;
+        this.config = null;
+        this.particleSystem = particleSystem;
+        this.animationsSetup = false; // Flag to prevent duplicate setup
+    }
+
+    async init() {
+        // Prevent multiple initializations
+        if (this.animationsSetup) {
+            console.warn('Animation system already initialized');
+            return;
+        }
+
+        // Load configuration first
+        await this.loadConfig();
+
+        // Load premium plugins
+        await loadPremiumPlugins();
+        this.pluginsLoaded = true;
+
+        // Setup animations directly - DOM should be ready by now
+        this.setupAnimations();
+        this.animationsSetup = true;
+    }
+
+    async loadConfig() {
+        try {
+            const response = await fetch('./config.json');
+            this.config = await response.json();
+            console.log('Configuration loaded:', this.config);
+        } catch (error) {
+            console.error('Failed to load configuration:', error);
+            // Fallback configuration
+            this.config = {
+                tooltips: {
+                    first: {
+                        text: "Cost-based price model rollout",
+                        className: "first-tooltip-content"
+                    },
+                    second: {
+                        text: "Saved $30K, via tariff-based pricing",
+                        className: "second-tooltip-content"
+                    },
+                    third: {
+                        first: {
+                            text: "+$2.1M margin",
+                            className: "third-tooltip-content-one"
+                        },
+                        second: {
+                            text: "in 6 months",
+                            className: "third-tooltip-content-two"
+                        }
+                    }
+                }
+            };
+        }
+    }
+
+    updateTooltipTexts() {
+        if (!this.config || !this.config.tooltips) {
+            console.warn('No tooltip configuration available');
+            return;
+        }
+
+        const tooltips = this.config.tooltips;
+
+        // Update first tooltip
+        const firstTooltip = document.querySelector('.first-tooltip-content div');
+        if (firstTooltip && tooltips.first) {
+            firstTooltip.textContent = tooltips.first.text;
+        }
+
+        // Update second tooltip
+        const secondTooltip = document.querySelector('.second-tooltip-content div');
+        if (secondTooltip && tooltips.second) {
+            secondTooltip.textContent = tooltips.second.text;
+        }
+
+        // Update third tooltip - first text
+        const thirdTooltipFirst = document.querySelector('.third-tooltip-content-one div');
+        if (thirdTooltipFirst && tooltips.third && tooltips.third.first) {
+            thirdTooltipFirst.textContent = tooltips.third.first.text;
+        }
+
+        // Update third tooltip - second text
+        const thirdTooltipSecond = document.querySelector('.third-tooltip-content-two div');
+        if (thirdTooltipSecond && tooltips.third && tooltips.third.second) {
+            thirdTooltipSecond.textContent = tooltips.third.second.text;
+        }
+
+        console.log('Tooltip texts updated from configuration');
+    }
+
+    setupAnimations() {
+        this.updateTooltipTexts();
+        this.debugElements();
+        this.createMainTimeline();
+        this.createAdvancedSVGAnimations();
+        this.createDollarAnimations();
+        this.createScrollTriggerAnimations();
+        this.createCircularProgressAnimation();
+        this.setupBackgroundLayerHoverEffects();
+        this.optimizePerformance();
+    }
+
+    debugElements() {
+        // Validation of SVG elements - debug output removed
+        const elementsToCheck = [
+            { name: 'Inner Hero', selector: '#inner-hero' },
+            { name: 'Metric Logo', selector: '.metric-logo' },
+            { name: 'Background', selector: '.background' },
+            { name: 'Metric Background', selector: '.metric-background' },
+            { name: 'Metric Background Gradient', selector: '.metric-background-gradient' },
+            { name: 'Stroked Metric', selector: '.stroked-metric' },
+            { name: 'Metric', selector: '.metric' },
+            { name: 'Metric Line', selector: '.metric-line' },
+            { name: 'Metric Glow', selector: '.metric-glow' },
+            { name: 'Metric Glow Light', selector: '.metric-glow-light' },
+            { name: 'First Tooltip Content', selector: '.first-tooltip-content' },
+            { name: 'Second Tooltip Content', selector: '.second-tooltip-content' },
+            { name: 'Third Tooltip Content One', selector: '.third-tooltip-content-one' },
+            { name: 'Third Tooltip Content Two', selector: '.third-tooltip-content-two' },
+            { name: 'Tooltip Stroke Elements', selector: '.first-tooltip-stroke, .second-tooltip-stroke, .third-tooltip-stroke' }
+        ];
+
+        // Element validation (logging removed)
+        elementsToCheck.forEach(item => {
+            const elements = document.querySelectorAll(item.selector);
+        });
+    }
+
+    createMainTimeline() {
+        const tl = this.timeline;
+
+        // Kill any existing animations on the main container to prevent conflicts
+        gsap.killTweensOf("#revomo-animation");
+        gsap.killTweensOf("#rotating-lines");
+
+        // Set transform origin to center for zoom-out effect
+        gsap.set("#revomo-animation", {
+            transformOrigin: "center center"
+        });
+
+        // Initial setup - start with the entire SVG at scale 0
+        tl.set("#revomo-animation", {
+            scale: 0,
+            opacity: 1,
+            transformOrigin: "center center"
+        });
+
+        tl.set("#rotating-lines", {
+            opacity: 0
+        });
+
+        // Main zoom-out reveal animation - 2 seconds duration
+        // The entire SVG container scales from 0 to 1 over 2 seconds
+        tl.to("#revomo-animation", {
+            scale: 1,
+            duration: 2,
+            ease: "power2.out",
+            transformOrigin: "center center",
+            delay: 0.5 // Small delay to see the effect clearly
+        });
+
+        tl.to("#rotating-lines", {
+            opacity: 1,
+            duration: 0.1,
+            ease: "power2.out",
+        });
+    }
+
+    createAdvancedSVGAnimations() {
+        // Create advanced timeline for SVG elements
+        const advancedTl = gsap.timeline({ delay: 2.8 }); // Start after main animation
+
+        // 1. Stagger reveal-in animation for #inner-hero
+        this.createStaggerRevealAnimation(advancedTl);
+
+        // 2. AutoAlpha reveal animations in sequence
+        this.createAutoAlphaSequence(advancedTl);
+
+        // 3. Tooltip animations
+        this.createTooltipAnimations(advancedTl);
+
+        // 4. Footer Content Animation
+        this.createFooterContentAnimation(advancedTl);
+
+        // 5. Background Layer 3D Cards Animation - starts 2 seconds after inner-hero
+        this.createBackgroundLayer3DAnimation(advancedTl);
+
+        // Start particle system after inner-hero animation completes
+        if (this.particleSystem) {
+            const staggerDuration = 1.2; // from createStaggerRevealAnimation
+            const elementDuration = 0.8; // from createStaggerRevealAnimation
+            const totalDuration = staggerDuration + elementDuration;
+            advancedTl.call(() => {
+                this.particleSystem.start();
+            }, [], `stagger-start+=${totalDuration}`);
+        }
+
+        return advancedTl;
+    }
+
+    createStaggerRevealAnimation(tl) {
+        const innerHero = document.querySelector("#inner-hero");
+
+        if (!innerHero) {
+            return;
+        }
+
+        // Get all direct children of inner-hero for stagger effect
+        const staggerElements = Array.from(innerHero.children);
+
+        // Set initial state - hidden and scaled down
+        gsap.set(staggerElements, {
+            autoAlpha: 0,
+            scale: 0.8,
+            y: 30,
+            transformOrigin: "center center"
+        });
+
+        // Stagger reveal animation
+        tl.to(staggerElements, {
+            autoAlpha: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: {
+                amount: 1.2, // Total time for all elements
+                from: "start", // Start from first element
+                ease: "power2.out"
+            },
+            ease: "back.out(1.7)"
+        }, "stagger-start");
+    }
+
+    createAutoAlphaSequence(tl) {
+        // 2.1 Metric Logo
+        const metricLogos = document.querySelectorAll('.metric-logo');
+        if (metricLogos.length > 0) {
+            gsap.set(metricLogos, { autoAlpha: 0 });
+            tl.to(metricLogos, {
+                autoAlpha: 1,
+                duration: 0.6,
+                ease: "power2.out"
+            }, "sequence-start");
+        }
+
+        // 2.2 Background
+        const backgrounds = document.querySelectorAll('.background');
+        if (backgrounds.length > 0) {
+            gsap.set(backgrounds, { autoAlpha: 0 });
+            tl.to(backgrounds, {
+                autoAlpha: 1,
+                duration: 0.6,
+                ease: "power2.out"
+            }, "sequence-start+=0.3");
+        }
+
+        // 2.3 Metric Background & Gradient (together)
+        const metricBg = document.querySelectorAll('.metric-background');
+        const metricBgGrad = document.querySelectorAll('.metric-background-gradient');
+        const combinedBgElements = [...metricBg, ...metricBgGrad];
+
+        if (combinedBgElements.length > 0) {
+            gsap.set(combinedBgElements, { autoAlpha: 0 });
+            tl.to(combinedBgElements, {
+                autoAlpha: 1,
+                duration: 0.6,
+                ease: "power2.out"
+            }, "sequence-start+=0.6");
+        }
+
+        // 2.4 Line Chart Metric Animation with sequential drawing using DrawSVG plugin
+        const strokedMetricElements = document.querySelectorAll('.stroked-metric');
+        const otherLineChartElements = [
+            ...document.querySelectorAll('.metric'),
+            ...document.querySelectorAll('.metric-line'),
+            ...document.querySelectorAll('.metric-glow'),
+            ...document.querySelectorAll('.metric-glow-light')
+        ];
+
+        // Animate stroked-metric with sequential drawing using GSAP DrawSVG plugin
+        if (strokedMetricElements.length > 0) {
+            const validPaths = [];
+            const fallbackElements = [];
+
+            // Set up sequential drawing animation for each stroked-metric path
+            strokedMetricElements.forEach((element, index) => {
+                try {
+                    // Check if it's a path element and has getTotalLength method
+                    if (element.tagName.toLowerCase() === 'path' && typeof element.getTotalLength === 'function') {
+                        const pathLength = element.getTotalLength();
+                        // Always use "4 4" for stroked-metric elements
+                        const originalDashArray = '4 4';
+
+                        // Ensure the element has the correct dash pattern before animation
+                        element.setAttribute('stroke-dasharray', originalDashArray);
+
+                        // Set initial state - start completely hidden using DrawSVG
+                        gsap.set(element, {
+                            drawSVG: "0%", // Start with no stroke visible
+                            autoAlpha: 1,
+                            strokeWidth: element.getAttribute('stroke-width') || '1.5',
+                        });
+
+                        validPaths.push({ element, pathLength, originalDashArray });
+                    } else {
+                        throw new Error('Element is not a valid SVG path or lacks getTotalLength method');
+                    }
+                } catch (error) {
+                    // Fallback to opacity animation for this element
+                    gsap.set(element, { autoAlpha: 0 });
+                    fallbackElements.push(element);
+                }
+            });
+
+            // Create sequential drawing animation for valid paths using DrawSVG
+            if (validPaths.length > 0) {
+                validPaths.forEach(({ element, pathLength, originalDashArray }, index) => {
+                    // Animate from 0% to 100% to create progressive drawing effect
+                    tl.to(element, {
+                        drawSVG: "100%", // Draw from start to end
+                        duration: 2.0, // Duration for drawing animation
+                        ease: "power2.inOut",
+                        onComplete: () => {
+                            // Restore original stroke-dasharray after DrawSVG animation completes
+                            gsap.set(element, { strokeDasharray: originalDashArray });
+                        }
+                    }, `sequence-start+=${0.9 + (index * 0.3)}`); // Stagger each path
+                });
+            }
+
+            // Animate fallback elements with opacity
+            if (fallbackElements.length > 0) {
+                tl.to(fallbackElements, {
+                    autoAlpha: 1,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: "power2.out"
+                }, "sequence-start+=0.9");
+            }
+        }
+
+        // Animate line chart elements with DrawSVG sequential drawing animation
+        if (otherLineChartElements.length > 0) {
+            const drawingSVGElements = [];
+            const fallbackElements = [];
+
+            // Separate SVG path elements that can use DrawSVG from fallback elements
+            otherLineChartElements.forEach((element, index) => {
+                try {
+                    // Check if it's a path element and has getTotalLength method
+                    if (element.tagName.toLowerCase() === 'path' && typeof element.getTotalLength === 'function') {
+                        const pathLength = element.getTotalLength();
+
+                        // Set initial state - start completely hidden using DrawSVG
+                        gsap.set(element, {
+                            drawSVG: "0%", // Start with no stroke visible
+                            autoAlpha: 1,
+                            strokeWidth: element.getAttribute('stroke-width') || element.style.strokeWidth || '1.5',
+                        });
+
+                        drawingSVGElements.push({ element, pathLength, index });
+                    } else {
+                        throw new Error('Element is not a valid SVG path or lacks getTotalLength method');
+                    }
+                } catch (error) {
+                    // Fallback to opacity animation for this element
+                    gsap.set(element, { autoAlpha: 0 });
+                    fallbackElements.push(element);
+                }
+            });
+
+            // Create sequential drawing animation for valid paths using DrawSVG
+            // All elements (.metric, .metric-line, .metric-glow, .metric-glow-light) use same duration and timing
+            if (drawingSVGElements.length > 0) {
+                const drawingDuration = 2.0; // Same duration for all elements
+                const startDelay = 1.1; // Same start timing as original
+
+                drawingSVGElements.forEach(({ element, pathLength, index }) => {
+                    // Animate from 0% to 100% to create progressive drawing effect
+                    tl.to(element, {
+                        drawSVG: "100%", // Draw from start to end
+                        duration: drawingDuration, // Same duration for all elements
+                        ease: "power2.inOut"
+                    }, `sequence-start+=${startDelay}`); // Same timing for all elements - no stagger
+                });
+            }
+
+            // Animate fallback elements with opacity
+            if (fallbackElements.length > 0) {
+                tl.to(fallbackElements, {
+                    autoAlpha: 1,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: "power2.out"
+                }, "sequence-start+=1.1");
+            }
+        }
+
+        // 2.5 Tooltip animations are now handled in createTooltipAnimations
+    }
+
+    createTooltipAnimations(tl) {
+        const tooltips = [{
+            name: 'First Tooltip',
+            parts: [
+                '.first-tooltip-stroke',
+                '.first-tooltip-circle-stroke',
+                '.first-tooltip-circle',
+                '.first-tooltip-fill',
+                '.first-tooltip-fill-stroke',
+            ],
+            content: '.first-tooltip-content'
+        }, {
+            name: 'Second Tooltip',
+            parts: [
+                '.second-tooltip-stroke',
+                '.second-tooltip-circle-stroke',
+                '.second-tooltip-circle',
+                '.second-tooltip-fill',
+                '.second-tooltip-fill-stroke',
+            ],
+            content: '.second-tooltip-content'
+        }, {
+            name: 'Third Tooltip',
+            parts: [
+                '.third-tooltip-stroke',
+                '.third-tooltip-circle-stroke',
+                '.third-tooltip-circle',
+                '.third-tooltip-fill',
+                '.third-tooltip-gradient',
+                '.third-tooltip-fill-stroke'
+            ],
+            content: '.third-tooltip-content-one, .third-tooltip-content-two'
+        }];
+
+        const tooltipDelay = 2.5; // Delay between each tooltip animation
+
+        tooltips.forEach((tooltip, index) => {
+            const startTime = `sequence-start+=${1.4 + (index * tooltipDelay)}`;
+            const tooltipParts = document.querySelectorAll(tooltip.parts.join(', '));
+            const tooltipContent = document.querySelectorAll(tooltip.content);
+
+            if (tooltipContent.length > 0) {
+                // Animate content to start concurrently with the tooltip parts for a smoother effect.
+                this.animateTooltipText(tl, tooltipContent, startTime);
+            }
+
+            if (tooltipParts.length > 0) {
+                gsap.set(tooltipParts, {
+                    autoAlpha: 0,
+                    scale: 0.9,
+                    transformOrigin: 'center center'
+                });
+                tl.to(tooltipParts, {
+                    autoAlpha: 1,
+                    scale: 1,
+                    duration: 0.6,
+                    stagger: 0.1,
+                    ease: 'power2.out'
+                }, startTime);
+            }
+
+            // Special handling for the third tooltip's gradient
+            if (tooltip.name === 'Third Tooltip') {
+                const gradients = document.querySelectorAll('.third-tooltip-gradient');
+                gradients.forEach(gradient => {
+                    const gradientStops = gradient.querySelectorAll('stop');
+                    if (gradientStops.length > 0) {
+                        gsap.set(gradientStops, {
+                            attr: { 'stop-opacity': 0 }
+                        });
+                        tl.to(gradientStops, {
+                            attr: { 'stop-opacity': 1 },
+                            duration: 0.6,
+                            ease: 'power2.out',
+                            stagger: 0.2
+                        }, startTime);
+                    }
+                });
+            }
+
+        });
+    }
+
+    animateTooltipText(tl, elements, startTime) {
+        elements.forEach((element, index) => {
+            // Add a 0.3s delay between each element's animation
+            const position = (index === 0) ? startTime : "<+=0.3";
+
+            if (SplitText && element && element.textContent.trim()) {
+                try {
+                    const splitText = new SplitText(element, {
+                        type: "lines,words,chars",
+                        linesClass: "split-line"
+                    });
+                    gsap.set(splitText.chars, {
+                        autoAlpha: 0,
+                        y: 20,
+                        scale: 0.8
+                    });
+                    tl.to(splitText.chars, {
+                        autoAlpha: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.4,
+                        stagger: 0.05,
+                        ease: "back.out(1.7)",
+                        onComplete: () => splitText.revert()
+                    }, position);
+                } catch (error) {
+                    // Fallback for SplitText error
+                    this.fallbackAnimate(tl, element, position);
+                }
+            } else if (element) {
+                // Fallback for no SplitText or no text
+                this.fallbackAnimate(tl, element, position);
+            }
+        });
+    }
+
+    fallbackAnimate(tl, element, position) {
+        gsap.set(element, {
+            autoAlpha: 0,
+            y: 15,
+            scale: 0.95
+        });
+        tl.to(element, {
+            autoAlpha: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.5,
+            ease: "back.out(1.7)"
+        }, position);
+    }
+
+    createFooterContentAnimation(tl) {
+        // Get footer content elements
+        const footerElements = document.querySelectorAll('.footer-content');
+
+        if (footerElements.length === 0) {
+            return;
+        }
+
+        // Filter elements that have text content (not just paths/lines)
+        const textElements = Array.from(footerElements).filter(element =>
+            element.textContent && element.textContent.trim().length > 0
+        );
+
+        if (textElements.length === 0) {
+            // Animate all footer elements with simple alpha animation
+            gsap.set(footerElements, {
+                autoAlpha: 0,
+                scale: 0.95
+            });
+
+            tl.to(footerElements, {
+                autoAlpha: 1,
+                scale: 1,
+                duration: 0.6,
+                stagger: {
+                    amount: 0.3,
+                    from: "start",
+                    ease: "power2.out"
+                },
+                ease: "back.out(1.7)"
+            }, "sequence-start+=3.0"); // Start after all other animations
+            return;
+        }
+
+        // Animate text-based footer elements with SplitText if available
+        textElements.forEach((element, index) => {
+            if (SplitText && element.textContent.trim()) {
+                try {
+                    // Create SplitText instance for footer text animation
+                    const splitText = new SplitText(element, {
+                        type: "lines,words,chars",
+                        linesClass: "split-line",
+                        wordsClass: "split-word",
+                        charsClass: "split-char"
+                    });
+
+                    // Set initial state for characters
+                    gsap.set(splitText.chars, {
+                        autoAlpha: 0,
+                        y: 15,
+                        scale: 0.9
+                    });
+
+                    // Animate characters with stagger
+                    tl.to(splitText.chars, {
+                        autoAlpha: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.3,
+                        stagger: {
+                            amount: 0.2,
+                            from: "start",
+                            ease: "power2.out"
+                        },
+                        ease: "back.out(1.7)",
+                        onComplete: () => {
+                            // Cleanup SplitText for performance
+                            splitText.revert();
+                        }
+                    }, `sequence - start+=${3.0 + (index * 0.05)}`);
+
+                } catch (error) {
+                    // Fallback animation
+                    gsap.set(element, {
+                        autoAlpha: 0,
+                        y: 10,
+                        scale: 0.95
+                    });
+
+                    tl.to(element, {
+                        autoAlpha: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.4,
+                        ease: "back.out(1.7)"
+                    }, `sequence - start+=${3.0 + (index * 0.05)}`);
+                }
+            } else {
+                // Fallback animation when SplitText is not available
+                gsap.set(element, {
+                    autoAlpha: 0,
+                    y: 10,
+                    scale: 0.95
+                });
+
+                tl.to(element, {
+                    autoAlpha: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 0.4,
+                    ease: "back.out(1.7)"
+                }, `sequence - start+=${3.0 + (index * 0.05)}`);
+            }
+        });
+    }
+
+    createBackgroundLayer3DAnimation(tl) {
+        // Get all background layer figure elements
+        const backgroundFigures = document.querySelectorAll('.background-layer-figure');
+
+        if (backgroundFigures.length === 0) {
+            console.warn('No background layer figures found for 3D animation');
+            return;
+        }
+
+        // PERFORMANCE OPTIMIZATION: Set initial state - completely hidden until animation starts
+        gsap.set(backgroundFigures, {
+            autoAlpha: 0, // Completely hidden (visibility: hidden + opacity: 0)
+            scale: 1.4,
+            rotationY: -25,
+            rotationX: 15,
+            z: -150,
+            transformOrigin: "center center",
+            transformStyle: "preserve-3d"
+        });
+
+        // PERFORMANCE OPTIMIZATION: Disable pointer events during animation
+        gsap.set(backgroundFigures, {
+            pointerEvents: "none"
+        });
+
+        // Create the 3D cards floating down animation
+        // Starts 2 seconds after the inner-hero stagger animation begins
+        tl.to(backgroundFigures, {
+            autoAlpha: 0.2, // Reveal and set to target opacity
+            scale: 1,
+            rotationY: 0,
+            rotationX: 0,
+            z: 0,
+            duration: 1.5,
+            stagger: {
+                amount: 2.0, // Total stagger duration
+                from: "random", // Random order for more organic feel
+                ease: "power2.out"
+            },
+            ease: "power3.out",
+            transformOrigin: "center center"
+        }, "stagger-start+=2.0"); // Start 2 seconds after inner-hero animation
+
+        // PERFORMANCE OPTIMIZATION: Enable pointer events after animation completes
+        tl.set(backgroundFigures, {
+            pointerEvents: "auto"
+        }, "stagger-start+=4.0"); // Enable hover after cards have settled
+
+        // Add subtle floating animation after they settle
+        tl.to(backgroundFigures, {
+            y: "random(-5, 5)",
+            rotationZ: "random(-2, 2)",
+            duration: 3,
+            stagger: {
+                amount: 1.5,
+                from: "random",
+                ease: "sine.inOut"
+            },
+            ease: "sine.inOut",
+            repeat: -1,
+            yoyo: true
+        }, "stagger-start+=4.0"); // Start floating after cards have settled
+    }
+
+    setupBackgroundLayerHoverEffects() {
+        const backgroundFigures = document.querySelectorAll('.background-layer-figure');
+        const backgroundLayer = document.querySelector('.background-layer');
+
+        if (backgroundFigures.length === 0 || !backgroundLayer) {
+            console.warn('Background layer elements not found for hover effects');
+            return;
+        }
+
+        // PERFORMANCE OPTIMIZATION: Hover effects will only work after pointer events are enabled
+        // This happens automatically at "stagger-start+=4.0" in the 3D animation timeline
+
+        // Enhanced hover effects with GSAP for smoother animations
+        backgroundFigures.forEach((figure, index) => {
+            // Mouse enter event
+            figure.addEventListener('mouseenter', () => {
+                // Animate the hovered figure
+                gsap.to(figure, {
+                    autoAlpha: 1, // Use autoAlpha for consistency
+                    scale: 1.05,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+
+                // Slightly fade other figures for focus effect
+                backgroundFigures.forEach((otherFigure, otherIndex) => {
+                    if (otherIndex !== index) {
+                        gsap.to(otherFigure, {
+                            autoAlpha: 0.1, // Use autoAlpha for consistency
+                            duration: 0.3,
+                            ease: "power2.out"
+                        });
+                    }
+                });
+            });
+
+            // Mouse leave event
+            figure.addEventListener('mouseleave', () => {
+                // Reset the hovered figure
+                gsap.to(figure, {
+                    autoAlpha: 0.2, // Use autoAlpha for consistency
+                    scale: 1,
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+
+                // Restore opacity to all other figures
+                backgroundFigures.forEach((otherFigure, otherIndex) => {
+                    if (otherIndex !== index) {
+                        gsap.to(otherFigure, {
+                            autoAlpha: 0.2, // Use autoAlpha for consistency
+                            duration: 0.3,
+                            ease: "power2.out"
+                        });
+                    }
+                });
+            });
+        });
+    }
+
+    createScrollTriggerAnimations() {
+        if (!window.ScrollTrigger) return;
+
+        // Create scroll-triggered animations for future sections
+        ScrollTrigger.create({
+            trigger: "#hero-section",
+            start: "top top",
+            end: "bottom top",
+            scrub: 1,
+            onUpdate: (self) => {
+                const progress = self.progress;
+                gsap.to("#revomo-animation", {
+                    scale: 1 - (progress * 0.2),
+                    opacity: 1 - (progress * 0.5),
+                    duration: 0.3
+                });
+            }
+        });
+
+        // Parallax effect for hero content
+        ScrollTrigger.create({
+            trigger: "#hero-section",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            onUpdate: (self) => {
+                const progress = self.progress;
+                gsap.set(".hero-content", {
+                    y: progress * -100
+                });
+            }
+        });
+    }
+
+    createDollarAnimations() {
+        // Get all dollar elements
+        const dollarElements = document.querySelectorAll('.dollar');
+
+        if (dollarElements.length === 0) {
+            return;
+        }
+
+        // Set initial state - hidden and scaled down
+        gsap.set(dollarElements, {
+            scale: 0,
+            opacity: 0,
+            transformOrigin: "center center"
+        });
+
+        // Create staggered spring-like reveal animation
+        const dollarTl = gsap.timeline({ delay: 4.5 }); // Start after main animations
+
+        dollarTl.to(dollarElements, {
+            scale: 1,
+            opacity: 1,
+            duration: 0.8,
+            ease: "back.out(2.5)", // Strong spring effect
+            stagger: {
+                amount: 0.6, // Total stagger time
+                from: "start"
+            }
+        });
+
+        // Create noticeable continuous movement for each dollar element
+        dollarElements.forEach((element, index) => {
+            // Random movement parameters for each element - increased distances
+            const moveDistance = 8 + Math.random() * 12; // 8-20 pixels movement (much more noticeable)
+            const duration = 2.5 + Math.random() * 1.5; // 2.5-4 seconds per cycle (slightly faster)
+            const delay = Math.random() * 1.5; // Random start delay
+
+            // Create infinite loop animation for noticeable movement
+            gsap.to(element, {
+                x: `+= ${Math.random() > 0.5 ? moveDistance : -moveDistance}`,
+                y: `+= ${Math.random() > 0.5 ? moveDistance : -moveDistance}`,
+                duration: duration,
+                ease: "sine.inOut",
+                repeat: -1,
+                yoyo: true,
+                delay: delay + 5.5, // Start after reveal animation completes
+                onRepeat: () => {
+                    // Randomize direction each repeat for organic movement - larger range
+                    const newX = (Math.random() - 0.5) * moveDistance * 2.5; // Increased multiplier
+                    const newY = (Math.random() - 0.5) * moveDistance * 2.5; // Increased multiplier
+                    gsap.set(element, { x: newX, y: newY });
+                }
+            });
+
+            // Add more noticeable rotation animation for dynamic effect
+            gsap.to(element, {
+                rotation: `+= ${(Math.random() - 0.5) * 12} `, // ±6 degrees (doubled)
+                duration: duration * 1.2, // Slightly faster rotation
+                ease: "sine.inOut",
+                repeat: -1,
+                yoyo: true,
+                delay: delay + 6, // Slightly offset from movement
+            });
+        });
+
+        return dollarTl;
+    }
+
+    createCircularProgressAnimation() {
+        // Circular progress animation removed - no .progress-circle elements exist in DOM
+        // This method is kept to maintain the class structure
+    }
+
+    optimizePerformance() {
+        // GPU acceleration and cleanup
+        gsap.set("#revomo-animation", {
+            force3D: true,
+            transformPerspective: 1000
+        });
+
+        // Cleanup function for performance
+        this.cleanup = () => {
+            ScrollTrigger?.killAll();
+            this.timeline.kill();
+            gsap.killTweensOf("#revomo-animation");
+            gsap.killTweensOf("#rotating-lines");
+        };
+    }
+
+    // Method to destroy the animation system
+    destroy() {
+        if (this.cleanup) {
+            this.cleanup();
+        }
+        this.animationsSetup = false;
+    }
+}
+
+// Simple Particle System
+class ParticleSystem {
+    constructor() {
+        this.container = document.getElementById('particle-container');
+        this.animationContainer = document.getElementById('revomo-animation');
+        this.particles = [];
+        this.maxParticles = 80; // Increased from 50
+        this.spawnRate = 180; // Faster spawning (reduced from 200ms)
+
+        // Size thresholds - increased maximum size
+        this.minSize = 1.44;
+        this.maxSize = 5; // Increased from 4.31 for more prominent particles
+
+        // Shape types - weighted to favor stars and polygons
+        this.shapeTypes = ['circle', 'square', 'star', 'polygon', 'star', 'polygon', 'star', 'polygon'];
+        this.spawnInterval = null;
+
+        this.init();
+    }
+
+    init() {
+        // this.startAnimation(); // Will be started by RevomoAnimationSystem
+    }
+
+    start() {
+        this.startAnimation();
+    }
+
+    createParticle() {
+        const shapeType = this.getRandomShape();
+        const size = this.getRandomSize();
+        const opacity = this.getOpacityBasedOnSize(size);
+
+        let element;
+
+        // Create different shapes
+        switch (shapeType) {
+            case 'circle':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                element.setAttribute('r', size / 2);
+                element.setAttribute('cx', 0);
+                element.setAttribute('cy', 0);
+                break;
+
+            case 'square':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                element.setAttribute('width', size);
+                element.setAttribute('height', size);
+                element.setAttribute('x', -size / 2);
+                element.setAttribute('y', -size / 2);
+                break;
+
+            case 'star':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                element.setAttribute('href', '#particle-star');
+                element.setAttribute('transform', `scale(${size / 2.5})`); // Increased from size/4
+                break;
+
+            case 'polygon':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                element.setAttribute('href', '#particle-polygon');
+                element.setAttribute('transform', `scale(${size / 2})`); // Increased from size/3
+                break;
+        }
+
+        // Set consistent styling
+        element.setAttribute('fill', '#ACA0E4');
+        element.setAttribute('opacity', opacity);
+        element.classList.add('particle');
+
+        return {
+            element,
+            size,
+            shapeType,
+            isActive: true
+        };
+    }
+
+    getRandomShape() {
+        return this.shapeTypes[Math.floor(Math.random() * this.shapeTypes.length)];
+    }
+
+    getRandomSize() {
+        return this.minSize + Math.random() * (this.maxSize - this.minSize);
+    }
+
+    getOpacityBasedOnSize(size) {
+        // Map size to opacity: minSize = 0.1, maxSize = 1.0
+        const sizeRange = this.maxSize - this.minSize;
+        const sizeRatio = (size - this.minSize) / sizeRange;
+        return 0.1 + (sizeRatio * 0.9); // 10% to 100% opacity
+    }
+
+    spawnParticle() {
+        if (this.particles.length >= this.maxParticles || !this.animationContainer) return;
+
+        const particle = this.createParticle();
+
+        const rect = this.animationContainer.getBoundingClientRect();
+        const startX = rect.left + rect.width / 3.2;
+        const startY = rect.top + rect.height / 3.5;
+
+        // Slight random offset from center to avoid a single point of origin
+        const startOffsetX = (Math.random() - 0.5) * 20;
+        const startOffsetY = (Math.random() - 0.5) * 20;
+
+        // Position the particle
+        gsap.set(particle.element, {
+            x: startX + startOffsetX,
+            y: startY + startOffsetY,
+            rotation: Math.random() * 360,
+            opacity: this.getOpacityBasedOnSize(particle.size)
+        });
+
+        // Add to DOM
+        this.container.appendChild(particle.element);
+        this.particles.push(particle);
+
+        // Animate particle falling
+        this.animateParticle(particle, startX, startY, rect.width, rect.height);
+    }
+
+    animateParticle(particle, centerX, centerY, containerWidth, containerHeight) {
+        const travelDistanceX = (containerWidth / 2) + 50 + (Math.random() * 100);
+        const direction = Math.random() < 0.5 ? -1 : 1;
+        const endX = centerX + (direction * travelDistanceX);
+
+        const travelDistanceY = (Math.random() - 0.5) * (containerHeight * 0.8);
+        const endY = centerY + travelDistanceY;
+
+        const duration = 25 + Math.random() * 10; // 15-25 seconds, increased for slower speed
+
+        gsap.to(particle.element, {
+            x: endX,
+            y: endY,
+            opacity: 0,
+            rotation: `+=${(Math.random() - 0.5) * 360}`,
+            duration: duration,
+            ease: "power1.out",
+            onComplete: () => this.removeParticle(particle)
+        });
+    }
+
+    removeParticle(particle) {
+        // Remove from DOM
+        if (particle.element.parentNode) {
+            particle.element.parentNode.removeChild(particle.element);
+        }
+
+        // Remove from particles array
+        const index = this.particles.indexOf(particle);
+        if (index > -1) {
+            this.particles.splice(index, 1);
+        }
+    }
+
+    startAnimation() {
+        // Continuous spawning
+        this.spawnInterval = setInterval(() => {
+            this.spawnParticle();
+        }, this.spawnRate);
+
+        // Initial particles
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => this.spawnParticle(), i * 100);
+        }
+    }
+
+    destroy() {
+        if (this.spawnInterval) {
+            clearInterval(this.spawnInterval);
+        }
+        this.particles.forEach(particle => this.removeParticle(particle));
+    }
+
+    // Debug function to check shape distribution
+    getShapeStats() {
+        const stats = {
+            circle: 0,
+            square: 0,
+            star: 0,
+            polygon: 0,
+            total: this.particles.length
+        };
+
+        this.particles.forEach(particle => {
+            if (stats.hasOwnProperty(particle.shapeType)) {
+                stats[particle.shapeType]++;
+            }
+        });
+
+        return stats;
+    }
+}
+
+class DiagonalParticleSystem {
+    constructor() {
+        this.container = document.getElementById('falling-particles');
+        this.particles = [];
+        this.maxParticles = 25;
+        this.spawnRate = 250;
+        this.beamWidth = 300;
+        this.beamAngle = 135; // Angle for diagonal particle movement
+        this.spawnInterval = null;
+
+        // Particle settings
+        this.minSize = 1;
+        this.maxSize = 3;
+        this.shapeTypes = ['circle', 'square', 'star', 'polygon'];
+    }
+
+    init() {
+        if (!this.container) {
+            console.warn('Diagonal particle container not found');
+            return false;
+        }
+
+        this.startAnimation();
+
+        console.log('Diagonal particle system initialized');
+        return true;
+    }
+
+    createParticle() {
+        const shapeType = this.getRandomShape();
+        const size = this.getRandomSize();
+        const opacity = this.getOpacityBasedOnSize(size);
+
+        let element;
+
+        switch (shapeType) {
+            case 'circle':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                element.setAttribute('r', size / 2);
+                element.setAttribute('cx', 0);
+                element.setAttribute('cy', 0);
+                break;
+
+            case 'square':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                element.setAttribute('width', size);
+                element.setAttribute('height', size);
+                element.setAttribute('x', -size / 2);
+                element.setAttribute('y', -size / 2);
+                break;
+
+            case 'star':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                element.setAttribute('href', '#particle-star');
+                element.setAttribute('transform', `scale(${size / 3})`);
+                break;
+
+            case 'polygon':
+                element = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                element.setAttribute('href', '#particle-polygon');
+                element.setAttribute('transform', `scale(${size / 2.5})`);
+                break;
+        }
+
+        // Use neutral particle styling
+        element.setAttribute('fill', '#ACA0E4'); // Neutral color
+        element.setAttribute('opacity', opacity);
+        element.classList.add('diagonal-particle');
+
+        return {
+            element,
+            size,
+            shapeType,
+            isActive: true
+        };
+    }
+
+    getRandomShape() {
+        return this.shapeTypes[Math.floor(Math.random() * this.shapeTypes.length)];
+    }
+
+    getRandomSize() {
+        return this.minSize + Math.random() * (this.maxSize - this.minSize);
+    }
+
+    getOpacityBasedOnSize(size) {
+        const sizeRange = this.maxSize - this.minSize;
+        const sizeRatio = (size - this.minSize) / sizeRange;
+        return 0.3 + (sizeRatio * 0.7); // 30% to 100% opacity
+    }
+
+    spawnParticle() {
+        if (!this.container) {
+            console.warn('Cannot spawn particle: missing container');
+            return;
+        }
+
+        if (this.particles.length >= this.maxParticles) {
+            const oldestParticle = this.particles[0];
+            if (oldestParticle) {
+                this.removeParticle(oldestParticle);
+            }
+        }
+
+        const particle = this.createParticle();
+
+        const screenWidth = window.innerWidth;
+
+        // Spawn particles inside the rotated beam, near its origin
+        const distAlongBeam = Math.random() * 200; // Spawn within the first 200px of the beam's length
+        const distAcrossBeam = (Math.random() - 0.5) * this.beamWidth * 0.9; // Use 90% of beam width
+
+        const angleRad = this.beamAngle * Math.PI / 180;
+
+        // Convert from beam's local coordinates to rotated coordinates
+        const localX = distAlongBeam;
+        const localY = distAcrossBeam;
+        const rotatedX = localX * Math.cos(angleRad) - localY * Math.sin(angleRad);
+        const rotatedY = localX * Math.sin(angleRad) + localY * Math.cos(angleRad);
+
+        // Translate to the beam's origin point at the top-right of the screen
+        const spawnX = screenWidth + rotatedX;
+        const spawnY = 0 + rotatedY;
+
+        gsap.set(particle.element, {
+            x: spawnX,
+            y: spawnY,
+            rotation: Math.random() * 360,
+            opacity: 0
+        });
+
+        this.container.appendChild(particle.element);
+        this.particles.push(particle);
+
+        this.animateParticle(particle, spawnX, spawnY);
+    }
+
+    animateParticle(particle, startX, startY) {
+        const angleRad = this.beamAngle * Math.PI / 180;
+        // Travel far enough to cross the entire screen viewport
+        const travelDist = (window.innerHeight / Math.sin(angleRad)) * 1.5;
+
+        // Add slight random drift to make movement feel more natural
+        const driftAngle = (Math.random() - 0.5) * 0.1; // +/- 0.05 radians from beam angle
+        const finalAngle = angleRad + driftAngle;
+
+        const endX = startX + travelDist * Math.cos(finalAngle);
+        const endY = startY + travelDist * Math.sin(finalAngle);
+
+        const duration = 12 + Math.random() * 6; // Slow, gentle movement (12-18 seconds)
+
+        const tl = gsap.timeline({ onComplete: () => this.removeParticle(particle) });
+
+        tl.to(particle.element, {
+            opacity: this.getOpacityBasedOnSize(particle.size),
+            duration: 1,
+            ease: "power2.inOut"
+        })
+            .to(particle.element, {
+                x: endX,
+                y: endY,
+                rotation: `+=${(Math.random() - 0.5) * 270}`,
+                duration: duration,
+                ease: "none"
+            }, 0)
+            .to(particle.element, {
+                opacity: 0,
+                duration: 2,
+                ease: "power2.in"
+            }, ">-2");
+    }
+
+    removeParticle(particle) {
+        if (particle.element.parentNode) {
+            particle.element.parentNode.removeChild(particle.element);
+        }
+
+        const index = this.particles.indexOf(particle);
+        if (index > -1) {
+            this.particles.splice(index, 1);
+        }
+    }
+
+    startAnimation() {
+        // Clear any existing interval
+        if (this.spawnInterval) {
+            clearInterval(this.spawnInterval);
+        }
+
+        // Start continuous spawning loop
+        this.spawnInterval = setInterval(() => {
+            this.spawnParticle();
+        }, this.spawnRate);
+
+        // Initial particles with staggered timing for immediate effect
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => this.spawnParticle(), i * 100);
+        }
+
+        console.log('Diagonal particle animation started');
+    }
+
+    destroy() {
+        if (this.spawnInterval) {
+            clearInterval(this.spawnInterval);
+        }
+        this.particles.forEach(particle => this.removeParticle(particle));
+    }
+}
+
+// Single initialization function to prevent duplicates
+async function initializeRevomoAnimation() {
+    // Prevent multiple initializations
+    if (isInitialized) {
+        console.warn('Revomo animation already initialized');
+        return;
+    }
+
+    // Check if containers exist
+    if (!document.getElementById('particle-container')) {
+        console.warn('Particle container not found, skipping initialization');
+        return;
+    }
+
+    try {
+        isInitialized = true;
+
+        // Initialize particle systems
+        globalParticleSystem = new ParticleSystem();
+        globalDiagonalParticleSystem = new DiagonalParticleSystem();
+
+        // Initialize main animation system
+        globalAnimationSystem = new RevomoAnimationSystem(globalParticleSystem);
+        await globalAnimationSystem.init();
+
+        // Start the diagonal particle system
+        globalDiagonalParticleSystem.init();
+
+        // Add cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (globalAnimationSystem) {
+                globalAnimationSystem.destroy();
+            }
+            if (globalParticleSystem) {
+                globalParticleSystem.destroy();
+            }
+            if (globalDiagonalParticleSystem) {
+                globalDiagonalParticleSystem.destroy();
+            }
+        });
+
+        console.log('Revomo animation system initialized successfully');
+    } catch (error) {
+        console.error('Error initializing animation systems:', error);
+        isInitialized = false; // Reset flag on error to allow retry
+    }
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeRevomoAnimation);
+} else {
+    // DOM is already ready
+    initializeRevomoAnimation();
+}
