@@ -199,19 +199,12 @@ body {
     opacity: 0.5;
     pointer-events: none;
     /* Allow hover events to pass through */
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 1250px !important;
-    height: 679px !important;
-    max-width: 100vw;
-    max-height: 100vh;
     will-change: transform, opacity;
     /* Performance optimization */
     backface-visibility: hidden;
     /* Prevent flickering on transform */
     transform-style: preserve-3d;
+    right: -450px;
     /* Ensure proper 3D context */
 }
 
