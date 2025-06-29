@@ -29,7 +29,7 @@
 }
 
 body {
-    background: #050A12;
+    background: transparent;
     font-family: 'InterDisplay', sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
@@ -39,7 +39,7 @@ body {
 .hero-container {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 130vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -58,6 +58,7 @@ body {
     align-items: center;
     pointer-events: none;
     /* Allow hover events to pass through to background layer */
+    margin-top: 20rem;
 }
 
 #revomo-animation {
@@ -216,7 +217,10 @@ body {
 
 .background-layer-content {
     width: 100%;
-    height: 100%;
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    bottom: 0;
 }
 
 .background-layer-figure {
