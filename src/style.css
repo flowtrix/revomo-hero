@@ -58,7 +58,6 @@ body {
     align-items: center;
     pointer-events: none;
     /* Allow hover events to pass through to background layer */
-    margin-top: 24rem;
 }
 
 #revomo-animation {
