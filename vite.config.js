@@ -3,7 +3,7 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
     // Configure for GitHub Pages deployment
-    base: process.env.NODE_ENV === 'production' ? '/Revomo/' : '/',
+    base: process.env.NODE_ENV === 'production' ? '/revomo-hero/' : '/',
     build: {
         outDir: 'dist',
         assetsDir: 'assets',
