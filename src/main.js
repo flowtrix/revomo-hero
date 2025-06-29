@@ -952,7 +952,6 @@ class RevomoAnimationSystem {
 class ParticleSystem {
     constructor() {
         this.container = document.getElementById('particle-container');
-        this.animationContainer = document.getElementById('revomo-animation');
         this.particles = [];
         this.maxParticles = 80; // Increased from 50
         this.spawnRate = 180; // Faster spawning (reduced from 200ms)
@@ -965,11 +964,29 @@ class ParticleSystem {
         this.shapeTypes = ['circle', 'square', 'star', 'polygon', 'star', 'polygon', 'star', 'polygon'];
         this.spawnInterval = null;
 
+        // Add resize handler to prevent animation shifting
+        this.setupResizeHandler();
         this.init();
     }
 
     init() {
         // this.startAnimation(); // Will be started by RevomoAnimationSystem
+    }
+
+    setupResizeHandler() {
+        // Debounced resize handler to prevent animation shifting
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Ensure container maintains proper centering after resize
+                if (this.container) {
+                    gsap.set(this.container, {
+                        clearProps: "all"
+                    });
+                }
+            }, 100);
+        });
     }
 
     start() {
@@ -1042,22 +1059,23 @@ class ParticleSystem {
     }
 
     spawnParticle() {
-        if (this.particles.length >= this.maxParticles || !this.animationContainer) return;
+        if (this.particles.length >= this.maxParticles || !this.container) return;
 
         const particle = this.createParticle();
 
-        const rect = this.animationContainer.getBoundingClientRect();
-        const startX = rect.left + rect.width / 3.2;
-        const startY = rect.top + rect.height / 3.5;
+        // Use the particle container's coordinate system (centered)
+        // Container is 1250x679, so center point is 625, 339.5
+        const containerCenterX = 1250 / 2;  // 625
+        const containerCenterY = 679 / 2;   // 339.5
 
-        // Slight random offset from center to avoid a single point of origin
-        const startOffsetX = (Math.random() - 0.5) * 20;
-        const startOffsetY = (Math.random() - 0.5) * 20;
+        // Start particles from the center area with slight offset
+        const startX = containerCenterX + (Math.random() - 0.5) * 40;
+        const startY = containerCenterY * 0.85 + (Math.random() - 0.5) * 40;
 
-        // Position the particle
+        // Position the particle in container coordinates
         gsap.set(particle.element, {
-            x: startX + startOffsetX,
-            y: startY + startOffsetY,
+            x: startX,
+            y: startY,
             rotation: Math.random() * 360,
             opacity: this.getOpacityBasedOnSize(particle.size)
         });
@@ -1067,18 +1085,23 @@ class ParticleSystem {
         this.particles.push(particle);
 
         // Animate particle falling
-        this.animateParticle(particle, startX, startY, rect.width, rect.height);
+        this.animateParticle(particle, startX, startY);
     }
 
-    animateParticle(particle, centerX, centerY, containerWidth, containerHeight) {
+    animateParticle(particle, startX, startY) {
+        // Container dimensions
+        const containerWidth = 1250;
+        const containerHeight = 679;
+
+        // Calculate travel distance and direction
         const travelDistanceX = (containerWidth / 2) + 50 + (Math.random() * 100);
         const direction = Math.random() < 0.5 ? -1 : 1;
-        const endX = centerX + (direction * travelDistanceX);
+        const endX = startX + (direction * travelDistanceX);
 
         const travelDistanceY = (Math.random() - 0.5) * (containerHeight * 0.8);
-        const endY = centerY + travelDistanceY;
+        const endY = startY + travelDistanceY;
 
-        const duration = 25 + Math.random() * 10; // 15-25 seconds, increased for slower speed
+        const duration = 25 + Math.random() * 10; // 25-35 seconds for smooth motion
 
         gsap.to(particle.element, {
             x: endX,
@@ -1165,10 +1188,27 @@ class DiagonalParticleSystem {
             return false;
         }
 
+        this.setupResizeHandler();
         this.startAnimation();
 
         console.log('Diagonal particle system initialized');
         return true;
+    }
+
+    setupResizeHandler() {
+        // Debounced resize handler to prevent animation shifting
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Ensure diagonal particles container maintains proper centering after resize
+                if (this.container) {
+                    gsap.set(this.container, {
+                        clearProps: "all"
+                    });
+                }
+            }, 100);
+        });
     }
 
     createParticle() {
@@ -1249,9 +1289,11 @@ class DiagonalParticleSystem {
 
         const particle = this.createParticle();
 
-        const screenWidth = window.innerWidth;
+        // Use container coordinate system (1250x679)
+        const containerWidth = 1250;
+        const containerHeight = 679;
 
-        // Spawn particles inside the rotated beam, near its origin
+        // Spawn particles inside the rotated beam, starting from top-right area of container
         const distAlongBeam = Math.random() * 200; // Spawn within the first 200px of the beam's length
         const distAcrossBeam = (Math.random() - 0.5) * this.beamWidth * 0.9; // Use 90% of beam width
 
@@ -1263,8 +1305,8 @@ class DiagonalParticleSystem {
         const rotatedX = localX * Math.cos(angleRad) - localY * Math.sin(angleRad);
         const rotatedY = localX * Math.sin(angleRad) + localY * Math.cos(angleRad);
 
-        // Translate to the beam's origin point at the top-right of the screen
-        const spawnX = screenWidth + rotatedX;
+        // Translate to the beam's origin point at the top-right area of the container
+        const spawnX = containerWidth + rotatedX;
         const spawnY = 0 + rotatedY;
 
         gsap.set(particle.element, {
@@ -1282,8 +1324,9 @@ class DiagonalParticleSystem {
 
     animateParticle(particle, startX, startY) {
         const angleRad = this.beamAngle * Math.PI / 180;
-        // Travel far enough to cross the entire screen viewport
-        const travelDist = (window.innerHeight / Math.sin(angleRad)) * 1.5;
+        // Travel far enough to cross the entire container
+        const containerHeight = 679;
+        const travelDist = (containerHeight / Math.sin(angleRad)) * 1.5;
 
         // Add slight random drift to make movement feel more natural
         const driftAngle = (Math.random() - 0.5) * 0.1; // +/- 0.05 radians from beam angle
