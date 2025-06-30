@@ -30,8 +30,8 @@
 
 body {
 
-    /* background: #050A12; */
-    background: transparent;
+    background: #050A12;
+    /* background: transparent; */
     font-family: 'InterDisplay', sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
@@ -279,6 +279,10 @@ body {
     transform: translateZ(0);
 }
 
+.metric-logo {
+    opacity: 0.7 !important;
+}
+
 /* GPU Acceleration */
 .hero-container,
 .svg-animation-container,
@@ -310,6 +314,15 @@ body {
     position: absolute;
     left: 0;
     bottom: 0;
+    display: flex;
+    gap: 42rem;
+}
+
+.background-layer-content-left,
+.background-layer-content-right {
+    width: 50%;
+    height: 100%;
+    position: relative;
 }
 
 .background-layer-figure {
@@ -395,16 +408,20 @@ body {
 }
 
 .nine {
-    right: -185px;
+    right: -150px;
 }
 
 .ten {
-    right: 165px;
+    right: 200px;
 }
 
 .eleven {
     top: 465px;
-    right: 80px;
+    right: 170px;
+}
+
+.eleven-two {
+    right: -175px;
 }
 
 .twelve,
