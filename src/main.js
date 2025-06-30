@@ -115,31 +115,43 @@ class RevomoAnimationSystem {
 
         const tooltips = this.config.tooltips;
 
-        // Update first tooltip
-        const firstTooltip = document.querySelector('.first-tooltip-content div');
+        // Update first tooltip - target the div with both classes
+        const firstTooltip = document.querySelector('.first-tooltip-content.tooltip-text');
         if (firstTooltip && tooltips.first) {
             firstTooltip.textContent = tooltips.first.text;
+            console.log('✅ First tooltip updated:', tooltips.first.text);
+        } else {
+            console.warn('❌ First tooltip element not found or config missing');
         }
 
-        // Update second tooltip
-        const secondTooltip = document.querySelector('.second-tooltip-content div');
+        // Update second tooltip - target the div with both classes
+        const secondTooltip = document.querySelector('.second-tooltip-content.tooltip-text');
         if (secondTooltip && tooltips.second) {
             secondTooltip.textContent = tooltips.second.text;
+            console.log('✅ Second tooltip updated:', tooltips.second.text);
+        } else {
+            console.warn('❌ Second tooltip element not found or config missing');
         }
 
         // Update third tooltip - first text
-        const thirdTooltipFirst = document.querySelector('.third-tooltip-content-one div');
+        const thirdTooltipFirst = document.querySelector('.third-tooltip-content-one.tooltip-text');
         if (thirdTooltipFirst && tooltips.third && tooltips.third.first) {
             thirdTooltipFirst.textContent = tooltips.third.first.text;
+            console.log('✅ Third tooltip (first) updated:', tooltips.third.first.text);
+        } else {
+            console.warn('❌ Third tooltip (first) element not found or config missing');
         }
 
         // Update third tooltip - second text
-        const thirdTooltipSecond = document.querySelector('.third-tooltip-content-two div');
+        const thirdTooltipSecond = document.querySelector('.third-tooltip-content-two.tooltip-text');
         if (thirdTooltipSecond && tooltips.third && tooltips.third.second) {
             thirdTooltipSecond.textContent = tooltips.third.second.text;
+            console.log('✅ Third tooltip (second) updated:', tooltips.third.second.text);
+        } else {
+            console.warn('❌ Third tooltip (second) element not found or config missing');
         }
 
-        console.log('Tooltip texts updated from configuration');
+        console.log('✅ All tooltip texts updated from configuration');
     }
 
     setupAnimations() {
