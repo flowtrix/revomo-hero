@@ -204,24 +204,21 @@ class RevomoAnimationSystem {
             transformOrigin: "center center"
         });
 
-        // Initial setup - start with the entire SVG at scale 0
+        // Initial setup - start with the entire SVG hidden
         tl.set("#revomo-animation", {
-            scale: 0,
-            opacity: 1,
-            transformOrigin: "center center"
+            autoAlpha: 0
         });
 
         tl.set("#rotating-lines", {
             opacity: 0
         });
 
-        // Main zoom-out reveal animation - 2 seconds duration
-        // The entire SVG container scales from 0 to 1 over 2 seconds
+        // Main fade-in reveal animation - 2 seconds duration
+        // The entire SVG container fades in over 2 seconds
         tl.to("#revomo-animation", {
-            scale: 1,
+            autoAlpha: 1,
             duration: 2,
             ease: "power2.out",
-            transformOrigin: "center center",
             delay: 0.5 // Small delay to see the effect clearly
         });
 
