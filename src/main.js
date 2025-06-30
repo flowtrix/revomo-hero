@@ -998,16 +998,14 @@ class ParticleSystem {
     constructor() {
         this.container = document.getElementById('particle-container');
         this.particles = [];
-        this.maxParticles = 80; // Increased from 50
-        this.spawnRate = 180; // Faster spawning (reduced from 200ms)
+        this.maxParticles = 75; // Set a medium number of particles
 
-        // Size thresholds - increased maximum size
+        // Size thresholds
         this.minSize = 1.44;
-        this.maxSize = 5; // Increased from 4.31 for more prominent particles
+        this.maxSize = 5;
 
-        // Shape types - weighted to favor stars and polygons
-        this.shapeTypes = ['circle', 'square', 'star', 'polygon', 'star', 'polygon', 'star', 'polygon'];
-        this.spawnInterval = null;
+        // Shape types
+        this.shapeTypes = ['circle', 'star']; // Only circles and stars
 
         // Add resize handler to prevent animation shifting
         this.setupResizeHandler();
@@ -1015,7 +1013,7 @@ class ParticleSystem {
     }
 
     init() {
-        // this.startAnimation(); // Will be started by RevomoAnimationSystem
+        // Will be started by RevomoAnimationSystem
     }
 
     setupResizeHandler() {
@@ -1041,9 +1039,20 @@ class ParticleSystem {
     createParticle() {
         const shapeType = this.getRandomShape();
         const size = this.getRandomSize();
-        const opacity = this.getOpacityBasedOnSize(size);
 
         let element;
+        let color, opacity;
+
+        // Determine color and opacity
+        if (Math.random() < 0.8) {
+            // 80% of particles
+            color = '#ACA0E4';
+            opacity = 0.8;
+        } else {
+            // 20% of particles
+            color = '#7A42EB';
+            opacity = 0.4;
+        }
 
         // Create different shapes
         switch (shapeType) {
@@ -1054,29 +1063,15 @@ class ParticleSystem {
                 element.setAttribute('cy', 0);
                 break;
 
-            case 'square':
-                element = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                element.setAttribute('width', size);
-                element.setAttribute('height', size);
-                element.setAttribute('x', -size / 2);
-                element.setAttribute('y', -size / 2);
-                break;
-
             case 'star':
                 element = document.createElementNS('http://www.w3.org/2000/svg', 'use');
                 element.setAttribute('href', '#particle-star');
-                element.setAttribute('transform', `scale(${size / 2.5})`); // Increased from size/4
-                break;
-
-            case 'polygon':
-                element = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-                element.setAttribute('href', '#particle-polygon');
-                element.setAttribute('transform', `scale(${size / 2})`); // Increased from size/3
+                element.setAttribute('transform', `scale(${size / 2.5})`);
                 break;
         }
 
         // Set consistent styling
-        element.setAttribute('fill', '#ACA0E4');
+        element.setAttribute('fill', color);
         element.setAttribute('opacity', opacity);
         element.classList.add('particle');
 
@@ -1089,7 +1084,12 @@ class ParticleSystem {
     }
 
     getRandomShape() {
-        return this.shapeTypes[Math.floor(Math.random() * this.shapeTypes.length)];
+        // 95% circles, 5% stars
+        if (Math.random() < 0.95) {
+            return 'circle';
+        } else {
+            return 'star';
+        }
     }
 
     getRandomSize() {
@@ -1097,10 +1097,10 @@ class ParticleSystem {
     }
 
     getOpacityBasedOnSize(size) {
-        // Map size to opacity: minSize = 0.1, maxSize = 1.0
+        // This function is no longer used for opacity, but we can keep it in case it's needed elsewhere.
         const sizeRange = this.maxSize - this.minSize;
         const sizeRatio = (size - this.minSize) / sizeRange;
-        return 0.1 + (sizeRatio * 0.9); // 10% to 100% opacity
+        return 0.1 + (sizeRatio * 0.9);
     }
 
     spawnParticle() {
@@ -1109,9 +1109,8 @@ class ParticleSystem {
         const particle = this.createParticle();
 
         // Use the particle container's coordinate system (centered)
-        // Container is 1250x679, so center point is 625, 339.5
-        const containerCenterX = 1250 / 2;  // 625
-        const containerCenterY = 679 / 2;   // 339.5
+        const containerCenterX = 1250 / 2; // 625
+        const containerCenterY = 679 / 2; // 339.5
 
         // Start particles from the center area with slight offset
         const startX = containerCenterX + (Math.random() - 0.5) * 40;
@@ -1122,14 +1121,14 @@ class ParticleSystem {
             x: startX,
             y: startY,
             rotation: Math.random() * 360,
-            opacity: this.getOpacityBasedOnSize(particle.size)
+            opacity: 0 // Start with opacity 0 and fade in
         });
 
         // Add to DOM
         this.container.appendChild(particle.element);
         this.particles.push(particle);
 
-        // Animate particle falling
+        // Animate particle scattering
         this.animateParticle(particle, startX, startY);
     }
 
@@ -1138,24 +1137,27 @@ class ParticleSystem {
         const containerWidth = 1250;
         const containerHeight = 679;
 
-        // Calculate travel distance and direction
-        const travelDistanceX = (containerWidth / 2) + 50 + (Math.random() * 100);
+        // Reduce travel distance to keep particles more contained and gentle
+        const travelDistanceX = Math.random() * (containerWidth / 2.5); // Keep X-axis travel within a tighter bound
         const direction = Math.random() < 0.5 ? -1 : 1;
         const endX = startX + (direction * travelDistanceX);
 
-        const travelDistanceY = (Math.random() - 0.5) * (containerHeight * 0.8);
-        const endY = startY + travelDistanceY;
+        const travelDistanceY = (Math.random() - 0.5) * (containerHeight * 0.8); // Constrain Y-axis travel
+        const endY = startY + travelDistanceY + 70; // Add a downward drift
 
-        const duration = 25 + Math.random() * 10; // 25-35 seconds for smooth motion
+        const duration = 8 + Math.random() * 4; // Slower, more gentle animation (8-12 seconds)
+
+        // Get the final opacity from the element itself, which was set in createParticle
+        const finalOpacity = particle.element.getAttribute('opacity');
 
         gsap.to(particle.element, {
             x: endX,
             y: endY,
-            opacity: 0,
-            rotation: `+=${(Math.random() - 0.5) * 360}`,
+            opacity: finalOpacity, // Animate to the final opacity
+            rotation: `+=${(Math.random() - 0.5) * 180}`, // Less rotation
             duration: duration,
-            ease: "power1.out",
-            onComplete: () => this.removeParticle(particle)
+            ease: "power2.out" // A gentler ease out
+            // No onComplete, so particles remain
         });
     }
 
@@ -1173,14 +1175,9 @@ class ParticleSystem {
     }
 
     startAnimation() {
-        // Continuous spawning
-        this.spawnInterval = setInterval(() => {
-            this.spawnParticle();
-        }, this.spawnRate);
-
-        // Initial particles
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => this.spawnParticle(), i * 100);
+        // Spawn all particles at once with a slight delay
+        for (let i = 0; i < this.maxParticles; i++) {
+            setTimeout(() => this.spawnParticle(), i * 20); // Stagger the spawn
         }
     }
 
@@ -1190,33 +1187,14 @@ class ParticleSystem {
         }
         this.particles.forEach(particle => this.removeParticle(particle));
     }
-
-    // Debug function to check shape distribution
-    getShapeStats() {
-        const stats = {
-            circle: 0,
-            square: 0,
-            star: 0,
-            polygon: 0,
-            total: this.particles.length
-        };
-
-        this.particles.forEach(particle => {
-            if (stats.hasOwnProperty(particle.shapeType)) {
-                stats[particle.shapeType]++;
-            }
-        });
-
-        return stats;
-    }
 }
 
 class DiagonalParticleSystem {
     constructor() {
         this.container = document.getElementById('falling-particles');
         this.particles = [];
-        this.maxParticles = 25;
-        this.spawnRate = 250;
+        this.maxParticles = 45; // Increased from 25 for higher density
+        this.spawnRate = 150; // Reduced from 250 for more frequent spawning (denser)
         this.beamWidth = 300;
         this.beamAngle = 135; // Angle for diagonal particle movement
         this.spawnInterval = null;
@@ -1380,7 +1358,7 @@ class DiagonalParticleSystem {
         const endX = startX + travelDist * Math.cos(finalAngle);
         const endY = startY + travelDist * Math.sin(finalAngle);
 
-        const duration = 12 + Math.random() * 6; // Slow, gentle movement (12-18 seconds)
+        const duration = 20 + Math.random() * 10; // Slower, more gentle movement (20-30 seconds)
 
         const tl = gsap.timeline({ onComplete: () => this.removeParticle(particle) });
 
