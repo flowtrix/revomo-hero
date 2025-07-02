@@ -446,13 +446,13 @@ body {
 }
 
 .twelve {
-    right: 38.5em;
+    right: 30.5em;
     width: 30.5em;
     height: 15.3em;
 }
 
 .thirteen {
-    right: 3em;
+    right: -5em;
     width: 30.5em;
     height: 15.3em;
 }
@@ -499,7 +499,7 @@ body {
     }
 
     .twelve {
-        right: 24.5em;
+        right: 20.5em;
     }
 
     .thirteen {
