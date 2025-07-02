@@ -30,11 +30,12 @@
 
 body {
 
-    /* background: #050A12; */
-    background: transparent;
+    background: #0d0c14;
+    /* background: transparent; */
     font-family: 'InterDisplay', sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
+    font-size: 0.5208333333vw;
 }
 
 /* Hero Section */
@@ -215,7 +216,7 @@ body {
     /* Prevent flickering on transform */
     transform-style: preserve-3d;
     /* Ensure proper 3D context */
-    right: -450px;
+    transform: translate(25%, 0);
 }
 
 /* Particle styling for better performance and visibility */
@@ -241,7 +242,6 @@ body {
 
 .background-layer-figure:hover {
     opacity: 1 !important;
-    transform: scale(1.05) !important;
     transition: all 0.3s ease-in-out !important;
     /* Ensure hover effects work in iframe */
 }
@@ -255,7 +255,6 @@ body {
 
 .background-layer {
     pointer-events: auto !important;
-    position: relative !important;
     z-index: 10 !important;
     /* Ensure background layer is interactive in iframe */
 }
@@ -304,7 +303,7 @@ body {
 }
 
 .background-layer {
-    position: relative;
+    position: absolute;
     width: 100%;
     height: 100%;
     /* filter: blur(2px); */
@@ -324,15 +323,6 @@ body {
     position: absolute;
     left: 0;
     bottom: 0;
-    display: flex;
-    gap: 42rem;
-}
-
-.background-layer-content-left,
-.background-layer-content-right {
-    width: 50%;
-    height: 100%;
-    position: relative;
 }
 
 .background-layer-figure {
@@ -341,18 +331,18 @@ body {
     cursor: pointer;
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, filter 0.3s ease-in-out;
     z-index: 2;
+    overflow: hidden;
     /* opacity and pointer-events managed by GSAP for performance */
 }
 
 /* Individual card hover effect */
 .background-layer-figure:hover {
     opacity: 1;
-    transform: scale(1.05);
     /* filter: drop-shadow(0 8px 16px rgba(138, 103, 197, 0.3)); */
 }
 
 /* Ensure images within figures are properly styled */
-.background-layer-figure img {
+.background-layer-figure svg {
     width: 100%;
     height: 100%;
     object-fit: contain;
@@ -360,91 +350,161 @@ body {
 }
 
 .one {
-    top: 174px;
-    left: -70px;
+    top: 17.4em;
+    left: -1em;
+    width: 34.9em;
+    height: 11.2em;
 }
 
 .two,
 .three,
 .nine,
 .ten {
-    top: 297px;
+    top: 29.7em;
 }
 
 .two {
-    left: -80px;
+    top: 33em;
+    left: -4.5em;
+    width: 30.5em;
+    height: 15.3em;
 }
 
 .three {
-    left: 230px;
-    width: 312px;
-    height: 197px;
+    left: 27em;
+    width: 31.2em;
+    height: 19.7em;
     position: relative;
-}
-
-.three img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
 }
 
 .four,
 .five {
-    top: 506px;
+    top: 50em;
 }
 
 .four {
-    top: 500px;
-    left: -140px;
+    left: -4.5em;
+    width: 30.5em;
+    height: 15.5em;
 }
 
 .five {
-    left: 180px;
+    left: 27em;
+    width: 34.4em;
+    height: 23.5em;
 }
 
 .six,
 .seven {
-    top: 766px;
+    top: 74.6em;
+}
+
+.six {
+    width: 34.4em;
+    height: 15.7em;
 }
 
 .seven {
-    left: 320px;
+    left: 32em;
+    width: 34.9em;
+    height: 9.4em;
 }
 
 .eight {
-    right: -30px;
-    top: 174px;
+    right: -3em;
+    top: 17.4em;
+    width: 34.9em;
+    height: 11.2em;
 }
 
 .nine {
-    right: -150px;
+    right: -4.5em;
+    width: 30.5em;
+    height: 15.5em;
 }
 
 .ten {
-    right: 200px;
+    right: 25em;
+    width: 34.4em;
+    height: 15.7em;
 }
 
 .eleven {
-    top: 465px;
-    right: 170px;
+    top: 46.5em;
+    right: 22.6em;
+    width: 35.4em;
+    height: 22.8em;
 }
 
 .eleven-two {
-    right: -175px;
+    right: -11em;
 }
 
 .twelve,
 .thirteen {
-    top: 705px;
+    top: 70.5em;
 }
 
 .twelve {
-    right: 295px;
+    right: 38.5em;
+    width: 30.5em;
+    height: 15.3em;
 }
 
 .thirteen {
-    right: -20px;
+    right: 3em;
+    width: 30.5em;
+    height: 15.3em;
+}
+
+@media (max-width: 1440px) {
+    .two {
+        left: -10em;
+    }
+
+    .three {
+        left: 21em;
+    }
+
+    .four {
+        left: -16em;
+    }
+
+    .five {
+        left: 15em;
+    }
+
+    .six {
+        left: -10em;
+    }
+
+    .seven {
+        left: 26em;
+    }
+
+    .nine {
+        right: -11.5em;
+    }
+
+    .ten {
+        right: 18em;
+    }
+
+    .eleven {
+        right: 14.6em;
+    }
+
+    .eleven-two {
+        right: -19em;
+    }
+
+    .twelve {
+        right: 24.5em;
+    }
+
+    .thirteen {
+        right: -8.5em;
+    }
 }
 
 

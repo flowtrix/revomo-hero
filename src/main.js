@@ -550,31 +550,7 @@ class RevomoAnimationSystem {
             // Add a 0.3s delay between each element's animation
             const position = (index === 0) ? startTime : "<+=0.3";
 
-            if (SplitText && element && element.textContent.trim()) {
-                try {
-                    const splitText = new SplitText(element, {
-                        type: "lines,words,chars",
-                        linesClass: "split-line"
-                    });
-                    gsap.set(splitText.chars, {
-                        autoAlpha: 0,
-                        y: 20,
-                        scale: 0.8
-                    });
-                    tl.to(splitText.chars, {
-                        autoAlpha: 1,
-                        y: 0,
-                        scale: 1,
-                        duration: 0.4,
-                        stagger: 0.05,
-                        ease: "back.out(1.7)",
-                        onComplete: () => splitText.revert()
-                    }, position);
-                } catch (error) {
-                    // Fallback for SplitText error
-                    this.fallbackAnimate(tl, element, position);
-                }
-            } else if (element) {
+            if (element) {
                 // Fallback for no SplitText or no text
                 this.fallbackAnimate(tl, element, position);
             }
@@ -585,14 +561,12 @@ class RevomoAnimationSystem {
         gsap.set(element, {
             autoAlpha: 0,
             y: 15,
-            scale: 0.95
         });
         tl.to(element, {
             autoAlpha: 1,
             y: 0,
-            scale: 1,
             duration: 0.5,
-            ease: "back.out(1.7)"
+            ease: "power2.out"
         }, position);
     }
 
@@ -749,21 +723,6 @@ class RevomoAnimationSystem {
         tl.set(backgroundFigures, {
             pointerEvents: "auto"
         }, "stagger-start+=4.0"); // Enable hover after cards have settled
-
-        // Add subtle floating animation after they settle
-        tl.to(backgroundFigures, {
-            y: "random(-5, 5)",
-            rotationZ: "random(-2, 2)",
-            duration: 3,
-            stagger: {
-                amount: 1.5,
-                from: "random",
-                ease: "sine.inOut"
-            },
-            ease: "sine.inOut",
-            repeat: -1,
-            yoyo: true
-        }, "stagger-start+=4.0"); // Start floating after cards have settled
     }
 
     setupBackgroundLayerHoverEffects() {
@@ -789,7 +748,6 @@ class RevomoAnimationSystem {
                 // Animate the hovered figure
                 gsap.to(figure, {
                     autoAlpha: 1,
-                    scale: 1.05,
                     duration: 0.3,
                     ease: "power2.out"
                 });
