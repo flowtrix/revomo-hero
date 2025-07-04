@@ -30,8 +30,8 @@
 
 body {
 
-    /* background: #0d0c14; */
-    background: transparent;
+    background: #0d0c14;
+    /* background: transparent; */
     font-family: 'InterDisplay', sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
@@ -299,6 +299,13 @@ body {
 
 /* Ensure images within figures are properly styled */
 .background-layer-figure svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: inherit;
+}
+
+.background-layer-figure img {
     width: 100%;
     height: 100%;
     object-fit: contain;
