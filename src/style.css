@@ -80,6 +80,8 @@ body {
     height: 100%;
     width: 1250px;
     height: 679px;
+    opacity: 0;
+    visibility: hidden;
     /* Remove initial transforms and opacity - let GSAP handle these */
     pointer-events: auto;
     z-index: 0;
@@ -167,6 +169,7 @@ body {
 
 /* Rotating animation for the gradient lines */
 #rotating-lines {
+    opacity: 0;
     animation: rotate 5s;
     animation-delay: 2.1s;
     transform-origin: 339.621px 338.994px;
@@ -254,55 +257,6 @@ body {
 }
 
 .background-layer {
-    pointer-events: auto !important;
-    z-index: 10 !important;
-    /* Ensure background layer is interactive in iframe */
-}
-
-/* Accessibility: Respect user's motion preferences */
-@media (prefers-reduced-motion: reduce) {
-    #particle-container,
-    #falling-particles {
-        display: none !important;
-    }
-
-    .particle,
-    .diagonal-particle {
-        animation: none !important;
-        transform: none !important;
-    }
-
-    /* Also disable main animation transforms for reduced motion */
-    #revomo-animation,
-    #rotating-lines {
-        animation: none !important;
-        transform: none !important;
-    }
-}
-
-/* Stroked Metric Line Drawing Animation */
-.stroked-metric {
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    will-change: stroke-dashoffset;
-    transform: translateZ(0);
-}
-
-.metric-logo {
-    opacity: 0.7 !important;
-}
-
-/* GPU Acceleration */
-.hero-container,
-.svg-animation-container,
-#revomo-animation,
-.hero-content,
-#rotating-lines {
-    will-change: transform, opacity;
-    transform: translateZ(0);
-}
-
-.background-layer {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -310,6 +264,8 @@ body {
     z-index: 0;
     /* Place above particle container but below SVG animation */
     transition: filter 0.3s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
 }
 
 /* Remove blur when hovering any background layer figure */

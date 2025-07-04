@@ -205,11 +205,11 @@ class RevomoAnimationSystem {
         });
 
         // Initial setup - start with the entire SVG hidden
-        tl.set("#revomo-animation", {
+        gsap.set("#revomo-animation", {
             autoAlpha: 0
         });
 
-        tl.set("#rotating-lines", {
+        gsap.set("#rotating-lines", {
             opacity: 0
         });
 
@@ -695,6 +695,9 @@ class RevomoAnimationSystem {
             transformOrigin: "center center",
             transformStyle: "preserve-3d"
         });
+
+        // Make the parent container visible before starting the animation
+        gsap.set('.background-layer', { autoAlpha: 1 });
 
         // PERFORMANCE OPTIMIZATION: Disable pointer events during animation
         gsap.set(backgroundFigures, {
