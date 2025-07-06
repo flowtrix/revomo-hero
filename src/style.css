@@ -30,8 +30,8 @@
 
 body {
 
-    background: #0d0c14;
-    /* background: transparent; */
+    /* background: #0d0c14; */
+    background: transparent;
     font-family: 'InterDisplay', sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
@@ -266,6 +266,8 @@ body {
     transition: filter 0.3s ease-in-out;
     opacity: 0;
     visibility: hidden;
+    mask-image: radial-gradient(circle at center, #0d0c14 20%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle at center, #0d0c14 20%, transparent 100%);
 }
 
 /* Remove blur when hovering any background layer figure */
@@ -279,6 +281,15 @@ body {
     position: absolute;
     left: 0;
     bottom: 0;
+    display: flex;
+    gap: 44em;
+}
+
+.background-layer-left,
+.background-layer-right {
+    width: 50%;
+    height: 100%;
+    position: relative;
 }
 
 .background-layer-figure {
@@ -384,6 +395,7 @@ body {
     right: -4.5em;
     width: 30.5em;
     height: 15.5em;
+    top: 29em;
 }
 
 .ten {
@@ -400,7 +412,8 @@ body {
 }
 
 .eleven-two {
-    right: -11em;
+    right: -11.3em;
+    top: 44.7em;
 }
 
 .twelve,
@@ -415,9 +428,10 @@ body {
 }
 
 .thirteen {
-    right: -5em;
+    right: -6.7em;
     width: 30.5em;
     height: 15.3em;
+    top: 66.5em;
 }
 
 @media (max-width: 1440px) {
