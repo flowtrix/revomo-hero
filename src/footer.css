@@ -6,8 +6,8 @@
 
 body {
 
-    background: #0d0c14 !important;
-    /* background: transparent; */
+    /* background: #0d0c14 !important; */
+    background: transparent;
     overflow-x: hidden;
     min-height: 100vh;
     font-size: 0.5208333333vw;
