@@ -48,7 +48,10 @@ function createPipeAnimations() {
         const length = path.getTotalLength();
         console.log(`Path length for ${pipe.path}: ${length}`);
 
-        tl.fromTo(circle, {
+        // Set initial state
+        gsap.set(circle, { autoAlpha: 0 });
+
+        tl.to(circle, {
             motionPath: {
                 path: path,
                 align: path,
@@ -56,15 +59,7 @@ function createPipeAnimations() {
                 start: 1,
                 end: 0.25,
             },
-            autoAlpha: 1
-        }, {
-            motionPath: {
-                path: path,
-                align: path,
-                alignOrigin: [0.5, 0.5],
-                start: 1,
-                end: 0.25,
-            },
+            autoAlpha: 1,
             duration: 5,
             ease: "none",
         }, index * 0.5)

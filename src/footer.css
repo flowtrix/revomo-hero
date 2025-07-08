@@ -28,3 +28,5 @@ body {
     transform-box: fill-box;
     transform-origin: center;
 }
+
+/* Initial visibility handled by GSAP autoAlpha */
