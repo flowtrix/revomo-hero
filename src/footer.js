@@ -222,7 +222,7 @@ class CircularParticleSystem {
                 x: startX,
                 y: startY,
                 rotation: Math.random() * 360,
-                opacity: 0 // Start with opacity 0 and fade in
+                autoAlpha: 0 // Start with autoAlpha 0 for smooth appearance
             });
 
             // Add to DOM
@@ -243,7 +243,7 @@ class CircularParticleSystem {
         const angleRad = direction.angle * Math.PI / 180;
 
         // Calculate travel distance based on direction - increased for much farther travel
-        let travelDistance = 800 + Math.random() * 500; // 500-800 pixels travel (much farther reach)
+        let travelDistance = 1000 + Math.random() * 800; // 500-800 pixels travel (much farther reach)
 
         // Apply 70% distance limit for all directions for optimal visual effect
         travelDistance = travelDistance * 0.7; // 70% of the full calculated distance
@@ -262,9 +262,9 @@ class CircularParticleSystem {
             onComplete: () => this.removeParticle(particle)
         });
 
-        // Slower fade in
+        // Smooth fade in with autoAlpha
         tl.to(particle.element, {
-            opacity: finalOpacity,
+            autoAlpha: finalOpacity,
             duration: 1.5,
             ease: "power2.out"
         })
@@ -276,9 +276,9 @@ class CircularParticleSystem {
                 duration: duration,
                 ease: "power1.out" // Gentler easing for slower feel
             }, 0)
-            // Slower fade out towards the end
+            // Smooth fade out with autoAlpha towards the end
             .to(particle.element, {
-                opacity: 0,
+                autoAlpha: 0,
                 duration: 3,
                 ease: "power2.in"
             }, ">-3");
