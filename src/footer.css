@@ -13,11 +13,17 @@ body {
     font-size: 0.5208333333vw;
 }
 
-.footer-svg {
+.footer-animation {
     width: 100%;
     position: absolute;
     bottom: 0;
     left: 0;
+}
+
+.footer-svg {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
 .orbi-outer-turbine, .orbi-inner-turbine {
