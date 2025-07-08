@@ -243,10 +243,10 @@ class CircularParticleSystem {
         const angleRad = direction.angle * Math.PI / 180;
 
         // Calculate travel distance based on direction - increased for much farther travel
-        let travelDistance = 1000 + Math.random() * 800; // 500-800 pixels travel (much farther reach)
+        let travelDistance = 800 + Math.random() * 500; // 500-800 pixels travel (much farther reach)
 
         // Apply 70% distance limit for all directions for optimal visual effect
-        travelDistance = travelDistance * 0.7; // 70% of the full calculated distance
+        travelDistance = travelDistance * 0.65; // 70% of the full calculated distance
 
         // Calculate end position based on angle
         const endX = startX + Math.cos(angleRad) * travelDistance;
