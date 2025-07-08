@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { InertiaPlugin } from "gsap/InertiaPlugin";
 import { Physics2DPlugin } from "gsap/Physics2DPlugin";
 import { DrawSVGPlugin } from "gsap/DrawSVGPlugin";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
 // Global variables for premium plugins
 let SplitText, MorphSVGPlugin;
@@ -31,7 +32,7 @@ async function loadPremiumPlugins() {
     }
 
     // Register available plugins
-    const availablePlugins = [InertiaPlugin, Physics2DPlugin, DrawSVGPlugin];
+    const availablePlugins = [InertiaPlugin, Physics2DPlugin, DrawSVGPlugin, MotionPathPlugin];
     if (SplitText) availablePlugins.push(SplitText);
     if (MorphSVGPlugin) availablePlugins.push(MorphSVGPlugin);
 
@@ -909,12 +910,12 @@ class RevomoAnimationSystem {
 
             // Add more noticeable rotation animation for dynamic effect
             gsap.to(element, {
-                rotation: `+= ${(Math.random() - 0.5) * 12} `, // ±6 degrees (doubled)
+                rotation: `+= ${(Math.random() - 0.5) * 12} `,
                 duration: duration * 1.2, // Slightly faster rotation
                 ease: "sine.inOut",
                 repeat: -1,
                 yoyo: true,
-                delay: delay + 6, // Slightly offset from movement
+                delay: delay + 6,
             });
         });
 

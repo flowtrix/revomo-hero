@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+
+    background: #0d0c14 !important;
+    /* background: transparent; */
+    overflow-x: hidden;
+    min-height: 100vh;
+    font-size: 0.5208333333vw;
+}
+
+.footer-svg {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.orbi-outer-turbine, .orbi-inner-turbine {
+    transform-origin: center;
+}
+
+#left-circle, #center-circle, #right-circle {
+    transform-box: fill-box;
+    transform-origin: center;
+}
