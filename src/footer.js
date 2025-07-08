@@ -309,7 +309,7 @@ class CircularParticleSystem {
         }, this.spawnRate);
 
         // Initial burst for immediate effect (slower start)
-        setTimeout(() => this.spawnCircularBurst(), 650);
+        setTimeout(() => this.spawnCircularBurst(), 500);
 
         console.log('Circular particle animation started');
     }
