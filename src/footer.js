@@ -78,7 +78,7 @@ class CircularParticleSystem {
         this.container = document.getElementById('circular-particle-container');
         this.particles = [];
         this.maxParticles = 90; // Total particles across all directions (increased for 9 directions)
-        this.spawnRate = 500; // Spawn interval in milliseconds (slower spawning)
+        this.spawnRate = 700; // Spawn interval in milliseconds (even slower spawning)
         this.spawnInterval = null;
 
         // Particle settings
@@ -246,13 +246,13 @@ class CircularParticleSystem {
         let travelDistance = 800 + Math.random() * 500; // 500-800 pixels travel (much farther reach)
 
         // Apply 70% distance limit for all directions for optimal visual effect
-        travelDistance = travelDistance * 0.65; // 70% of the full calculated distance
+        travelDistance = travelDistance * 0.62; // 70% of the full calculated distance
 
         // Calculate end position based on angle
         const endX = startX + Math.cos(angleRad) * travelDistance;
         const endY = startY - Math.sin(angleRad) * travelDistance; // Negative because Y increases downward
 
-        const duration = 15 + Math.random() * 5; // 15-20 seconds for much slower, gentle movement
+        const duration = 22 + Math.random() * 8; // 22-30 seconds for ultra slow, dreamy movement
 
         // Get the final opacity from the element itself, which was set in createParticle
         const finalOpacity = particle.element.getAttribute('opacity');
@@ -265,7 +265,7 @@ class CircularParticleSystem {
         // Smooth fade in with autoAlpha
         tl.to(particle.element, {
             autoAlpha: finalOpacity,
-            duration: 1.5,
+            duration: 2.5,
             ease: "power2.out"
         })
             // Move in direction with slower rotation
@@ -279,9 +279,9 @@ class CircularParticleSystem {
             // Smooth fade out with autoAlpha towards the end
             .to(particle.element, {
                 autoAlpha: 0,
-                duration: 3,
+                duration: 4.5,
                 ease: "power2.in"
-            }, ">-3");
+            }, ">-4.5");
     }
 
     removeParticle(particle) {
@@ -309,7 +309,7 @@ class CircularParticleSystem {
         }, this.spawnRate);
 
         // Initial burst for immediate effect (slower start)
-        setTimeout(() => this.spawnCircularBurst(), 500);
+        setTimeout(() => this.spawnCircularBurst(), 800);
 
         console.log('Circular particle animation started');
     }
