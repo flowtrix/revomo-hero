@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,6 +12,11 @@ export default defineConfig({
         // Handle large files
         chunkSizeWarningLimit: 1000,
         rollupOptions: {
+            // Define multiple HTML entry points
+            input: {
+                main: resolve(__dirname, 'index.html'),
+                footer: resolve(__dirname, 'footer.html')
+            },
             output: {
                 manualChunks: {
                     'gsap': ['gsap'],
