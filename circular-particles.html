@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Circular Particles Animation</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: transparent;
+            overflow-x: hidden;
+            min-height: 100vh;
+            font-size: 0.5208333333vw;
+        }
+
+        /* Circular particle container adjustments - Bottom center aligned */
+        #circular-particle-container {
+            opacity: 0.7;
+            pointer-events: none;
+            /* Allow hover events to pass through */
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 1250px !important;
+            height: 679px !important;
+            max-width: 100vw;
+            max-height: 100vh;
+            z-index: 2;
+            /* Place above other particle systems for visibility */
+            will-change: transform, opacity;
+            /* Performance optimization */
+            backface-visibility: hidden;
+            /* Prevent flickering on transform */
+            transform-style: preserve-3d;
+            /* Ensure proper 3D context */
+        }
+
+        /* Particle styling for better performance and visibility */
+        .circular-particle {
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+            contain: layout style paint;
+        }
+
+        /* Responsive Design - Scale-based approach for better performance */
+
+        /* Tablet - 480px target (29% reduction from 680px desktop) */
+        @media (max-width: 1024px) {
+            #circular-particle-container {
+                scale: 0.706 !important;
+            }
+        }
+
+        /* Large Phone - 320px target (33% reduction from tablet) */
+        @media (max-width: 768px) {
+            #circular-particle-container {
+                scale: 0.471 !important;
+            }
+        }
+
+        /* Mobile - 260px target (19% reduction from large phone) */
+        @media (max-width: 480px) {
+            #circular-particle-container {
+                scale: 0.382 !important;
+            }
+        }
+
+        /* Small Mobile - 220px target (15% reduction from mobile) */
+        @media (max-width: 360px) {
+            #circular-particle-container {
+                scale: 0.324 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Circular Particle Animation Container -->
+    <svg id="circular-particle-container" width="1250" height="679" viewBox="0 0 1250 679" role="img"
+        aria-label="Animated circular background particles for visual enhancement" aria-hidden="true">
+        <!-- Particle shape definitions -->
+        <defs>
+            <!-- Circle Shape -->
+            <circle id="circular-particle-circle" r="2" fill="#ACA0E4" />
+
+            <!-- Star Shape -->
+            <g id="circular-particle-star">
+                <path
+                    d="M1.88057 3.82837L1.57581 2.69647L0.443906 2.39171L1.57581 2.08695L1.88057 0.955045L2.18533 2.08695L3.31723 2.39171L2.18533 2.69647L1.88057 3.82837Z"
+                    fill="#ACA0E4" transform="translate(-1.88057, -1.89171)" />
+            </g>
+        </defs>
+    </svg>
+
+    <!-- GSAP Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/MotionPathPlugin.min.js"></script>
+
+    <script>
+        // Register GSAP plugins
+        gsap.registerPlugin(MotionPathPlugin);
+
+        // Global variable for circular particle system
+        let globalCircularParticleSystem = null;
+
+        // Circular Particle System for multi-directional scatter animation
+        class CircularParticleSystem {
+            constructor() {
+                this.container = document.getElementById('circular-particle-container');
+                this.particles = [];
+                this.maxParticles = 90; // Total particles across all directions (increased for 9 directions)
+                this.spawnRate = 500; // Spawn interval in milliseconds (even slower spawning)
+                this.spawnInterval = null;
+
+                // Particle settings
+                this.minSize = 1.44;
+                this.maxSize = 5;
+                this.shapeTypes = ['circle', 'star']; // Only circles and stars
+
+                // Circular directions: wider top coverage for more horizontal spread
+                this.directions = [
+                    { name: 'quarter-left', angle: 160 },      // Quarter left (slightly upward)
+                    { name: 'left-top', angle: 135 },          // Left-top diagonal
+                    { name: 'top-left-wide', angle: 110 },     // Wide top-left
+                    { name: 'top-left', angle: 100 },          // Top-left
+                    { name: 'top', angle: 90 },                // Straight up
+                    { name: 'top-right', angle: 80 },          // Top-right
+                    { name: 'top-right-wide', angle: 70 },     // Wide top-right
+                    { name: 'top-right-diagonal', angle: 45 }, // Top-right diagonal
+                    { name: 'quarter-right', angle: 20 }       // Quarter right (slightly upward)
+                ];
+
+                this.setupResizeHandler();
+            }
+
+            init() {
+                if (!this.container) {
+                    console.warn('Circular particle container not found');
+                    return false;
+                }
+
+                this.startAnimation();
+                console.log('Circular particle system initialized');
+                return true;
+            }
+
+            setupResizeHandler() {
+                // Debounced resize handler to prevent animation shifting
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => {
+                        // Ensure circular particles container maintains proper centering after resize
+                        if (this.container) {
+                            gsap.set(this.container, {
+                                clearProps: "all"
+                            });
+                        }
+                    }, 100);
+                });
+            }
+
+            createParticle() {
+                const shapeType = this.getRandomShape();
+                const size = this.getRandomSize();
+
+                let element;
+                let color, opacity;
+
+                // Determine color and opacity (same as original ParticleSystem)
+                if (Math.random() < 0.8) {
+                    // 80% of particles
+                    color = '#ACA0E4';
+                    opacity = 0.8;
+                } else {
+                    // 20% of particles
+                    color = '#7A42EB';
+                    opacity = 0.4;
+                }
+
+                // Create different shapes
+                switch (shapeType) {
+                    case 'circle':
+                        element = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        element.setAttribute('r', size / 2);
+                        element.setAttribute('cx', 0);
+                        element.setAttribute('cy', 0);
+                        break;
+
+                    case 'star':
+                        element = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+                        element.setAttribute('href', '#circular-particle-star');
+                        element.setAttribute('transform', `scale(${size / 2.5})`);
+                        break;
+                }
+
+                // Set consistent styling
+                element.setAttribute('fill', color);
+                element.setAttribute('opacity', opacity);
+                element.classList.add('circular-particle');
+
+                return {
+                    element,
+                    size,
+                    shapeType,
+                    isActive: true
+                };
+            }
+
+            getRandomShape() {
+                // 80% circles, 20% stars (as requested)
+                if (Math.random() < 0.8) {
+                    return 'circle';
+                } else {
+                    return 'star';
+                }
+            }
+
+            getRandomSize() {
+                return this.minSize + Math.random() * (this.maxSize - this.minSize);
+            }
+
+            spawnCircularBurst() {
+                if (!this.container) {
+                    console.warn('Cannot spawn circular burst: missing container');
+                    return;
+                }
+
+                // Remove excess particles if needed
+                while (this.particles.length >= this.maxParticles) {
+                    const oldestParticle = this.particles[0];
+                    if (oldestParticle) {
+                        this.removeParticle(oldestParticle);
+                    }
+                }
+
+                // Container dimensions
+                const containerWidth = 1250;
+                const containerHeight = 679;
+                const containerCenterX = containerWidth / 2; // 625
+                const containerCenterY = containerHeight / 2; // 339.5
+
+                // Spawn particles in all 9 directions simultaneously
+                this.directions.forEach((direction, index) => {
+                    const particle = this.createParticle();
+
+                    // Start particles from very bottom area with slight offset
+                    const startX = containerCenterX + (Math.random() - 0.5) * 30;
+                    const startY = containerHeight * 0.95 + (Math.random() - 0.5) * 20; // Start from bottom 95% area (much lower)
+
+                    // Position the particle in container coordinates
+                    gsap.set(particle.element, {
+                        x: startX,
+                        y: startY,
+                        rotation: Math.random() * 360,
+                        autoAlpha: 0 // Start with autoAlpha 0 for smooth appearance
+                    });
+
+                    // Add to DOM
+                    this.container.appendChild(particle.element);
+                    this.particles.push(particle);
+
+                    // Animate particle in the specific direction
+                    this.animateParticleInDirection(particle, startX, startY, direction);
+                });
+            }
+
+            animateParticleInDirection(particle, startX, startY, direction) {
+                // Container dimensions
+                const containerWidth = 1250;
+                const containerHeight = 679;
+
+                // Convert angle to radians
+                const angleRad = direction.angle * Math.PI / 180;
+
+                // Calculate travel distance based on direction - increased for much farther travel
+                let travelDistance = 800 + Math.random() * 500; // 500-800 pixels travel (much farther reach)
+
+                // Apply 70% distance limit for all directions for optimal visual effect
+                travelDistance = travelDistance * 0.7; // 70% of the full calculated distance
+
+                // Calculate end position based on angle
+                const endX = startX + Math.cos(angleRad) * travelDistance;
+                const endY = startY - Math.sin(angleRad) * travelDistance; // Negative because Y increases downward
+
+                const duration = 13 + Math.random() * 5; // 13-18 seconds for ultra slow, dreamy movement
+
+                // Get the final opacity from the element itself, which was set in createParticle
+                const finalOpacity = particle.element.getAttribute('opacity');
+
+                // Create timeline for smooth fade in, movement, and fade out
+                const tl = gsap.timeline({
+                    onComplete: () => this.removeParticle(particle)
+                });
+
+                // Smooth fade in with autoAlpha
+                tl.to(particle.element, {
+                    autoAlpha: finalOpacity,
+                    duration: 1.5,
+                    ease: "power2.out"
+                })
+                    // Move in direction with slower rotation
+                    .to(particle.element, {
+                        x: endX,
+                        y: endY,
+                        rotation: `+=${(Math.random() - 0.5) * 120}`, // Reduced rotation for gentler movement
+                        duration: duration,
+                        ease: "power1.out" // Gentler easing for slower feel
+                    }, 0)
+                    // Smooth fade out with autoAlpha towards the end
+                    .to(particle.element, {
+                        autoAlpha: 0,
+                        duration: 3,
+                        ease: "power2.in"
+                    }, ">-3");
+            }
+
+            removeParticle(particle) {
+                // Remove from DOM
+                if (particle.element.parentNode) {
+                    particle.element.parentNode.removeChild(particle.element);
+                }
+
+                // Remove from particles array
+                const index = this.particles.indexOf(particle);
+                if (index > -1) {
+                    this.particles.splice(index, 1);
+                }
+            }
+
+            startAnimation() {
+                // Clear any existing interval
+                if (this.spawnInterval) {
+                    clearInterval(this.spawnInterval);
+                }
+
+                // Start infinite loop spawning
+                this.spawnInterval = setInterval(() => {
+                    this.spawnCircularBurst();
+                }, this.spawnRate);
+
+                // Initial burst for immediate effect (slower start)
+                setTimeout(() => this.spawnCircularBurst(), 500);
+
+                console.log('Circular particle animation started');
+            }
+
+            destroy() {
+                if (this.spawnInterval) {
+                    clearInterval(this.spawnInterval);
+                }
+                this.particles.forEach(particle => this.removeParticle(particle));
+            }
+        }
+
+        // Initialize circular particle system
+        function initializeCircularParticleSystem() {
+            // Initialize the circular particle system
+            globalCircularParticleSystem = new CircularParticleSystem();
+
+            // Start the circular particle system
+            globalCircularParticleSystem.init();
+
+            // Add cleanup on page unload
+            window.addEventListener('beforeunload', () => {
+                if (globalCircularParticleSystem) {
+                    globalCircularParticleSystem.destroy();
+                }
+            });
+
+            console.log('Circular particle system initialized successfully');
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeCircularParticleSystem);
+        } else {
+            // DOM is already ready
+            initializeCircularParticleSystem();
+        }
+    </script>
+</body>
+
+</html>
