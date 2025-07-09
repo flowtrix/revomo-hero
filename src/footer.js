@@ -54,18 +54,18 @@ function createPipeAnimations() {
         // Set initial state
         gsap.set(circle, { autoAlpha: 0 });
 
-        tl.to(circle, {
-            motionPath: {
-                path: path,
-                align: path,
-                alignOrigin: [0.5, 0.5],
-                start: 1,
-                end: 0.25,
-            },
-            autoAlpha: 1,
-            duration: 5,
-            ease: "none",
-        }, index * 0.5)
+        tl.to(circle, { autoAlpha: 1, duration: 1 }, index * 0.5)
+            .to(circle, {
+                motionPath: {
+                    path: path,
+                    align: path,
+                    alignOrigin: [0.5, 0.5],
+                    start: 1,
+                    end: 0.25,
+                },
+                duration: 5,
+                ease: "none",
+            }, index * 0.5)
             .to(circle, { autoAlpha: 0, duration: 1 }, (index * 0.5) + 4);
     });
 }
