@@ -15,7 +15,8 @@ export default defineConfig({
             // Define multiple HTML entry points
             input: {
                 main: resolve(__dirname, 'index.html'),
-                footer: resolve(__dirname, 'footer.html')
+                footer: resolve(__dirname, 'footer.html'),
+                circularParticles: resolve(__dirname, 'circular-particles.html')
             },
             output: {
                 manualChunks: {
