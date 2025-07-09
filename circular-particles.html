@@ -84,7 +84,7 @@
 
 <body>
     <!-- Circular Particle Animation Container -->
-    <svg id="circular-particle-container" width="1250" height="679" viewBox="0 0 1250 679" role="img"
+    <svg id="circular-particle-container" width="1250" height="679" viewBox="-1000 -1100 3300 1800" role="img"
         aria-label="Animated circular background particles for visual enhancement" aria-hidden="true">
         <!-- Particle shape definitions -->
         <defs>
@@ -116,13 +116,13 @@
             constructor() {
                 this.container = document.getElementById('circular-particle-container');
                 this.particles = [];
-                this.maxParticles = 90; // Total particles across all directions (increased for 9 directions)
-                this.spawnRate = 500; // Spawn interval in milliseconds (even slower spawning)
+                this.maxParticles = 300; // Total particles across all directions (increased for 9 directions)
+                this.spawnRate = 1500; // Spawn interval in milliseconds (even slower spawning)
                 this.spawnInterval = null;
 
                 // Particle settings
-                this.minSize = 1.44;
-                this.maxSize = 5;
+                this.minSize = 4;
+                this.maxSize = 14;
                 this.shapeTypes = ['circle', 'star']; // Only circles and stars
 
                 // Circular directions: wider top coverage for more horizontal spread
@@ -281,17 +281,17 @@
                 // Convert angle to radians
                 const angleRad = direction.angle * Math.PI / 180;
 
-                // Calculate travel distance based on direction - increased for much farther travel
-                let travelDistance = 800 + Math.random() * 500; // 500-800 pixels travel (much farther reach)
+                // Calculate travel distance based on direction - reduced for shorter travel
+                let travelDistance = 800 + Math.random() * 600; // 800-1400 pixels travel
 
-                // Apply 70% distance limit for all directions for optimal visual effect
-                travelDistance = travelDistance * 0.7; // 70% of the full calculated distance
+                // Apply 75% distance limit for all directions for optimal visual effect
+                travelDistance = travelDistance * 0.75; // 75% of the full calculated distance
 
                 // Calculate end position based on angle
                 const endX = startX + Math.cos(angleRad) * travelDistance;
                 const endY = startY - Math.sin(angleRad) * travelDistance; // Negative because Y increases downward
 
-                const duration = 13 + Math.random() * 5; // 13-18 seconds for ultra slow, dreamy movement
+                const duration = 20 + Math.random() * 10; // 20-30 seconds for a faster, but still smooth movement
 
                 // Get the final opacity from the element itself, which was set in createParticle
                 const finalOpacity = particle.element.getAttribute('opacity');
@@ -304,23 +304,23 @@
                 // Smooth fade in with autoAlpha
                 tl.to(particle.element, {
                     autoAlpha: finalOpacity,
-                    duration: 1.5,
+                    duration: 4,
                     ease: "power2.out"
                 })
                     // Move in direction with slower rotation
                     .to(particle.element, {
                         x: endX,
                         y: endY,
-                        rotation: `+=${(Math.random() - 0.5) * 120}`, // Reduced rotation for gentler movement
+                        rotation: `+=${(Math.random() - 0.5) * 60}`, // Further reduced rotation for ultra gentle movement
                         duration: duration,
                         ease: "power1.out" // Gentler easing for slower feel
                     }, 0)
                     // Smooth fade out with autoAlpha towards the end
                     .to(particle.element, {
                         autoAlpha: 0,
-                        duration: 3,
+                        duration: 0.5,
                         ease: "power2.in"
-                    }, ">-3");
+                    }, ">-0.5");
             }
 
             removeParticle(particle) {
@@ -348,7 +348,7 @@
                 }, this.spawnRate);
 
                 // Initial burst for immediate effect (slower start)
-                setTimeout(() => this.spawnCircularBurst(), 500);
+                setTimeout(() => this.spawnCircularBurst(), 1000);
 
                 console.log('Circular particle animation started');
             }
