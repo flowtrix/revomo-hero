@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shimmering Pixel-Grid Animation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            color: white;
+            font-family: sans-serif;
+        }
+        .dot-field {
+            width: 580px;
+            height: 580px;
+            margin: 2rem auto; /* Center the canvas */
+        }
+        .content {
+            padding: 2rem;
+            text-align: center;
+            height: 200vh; /* Make page scrollable to test ScrollTrigger */
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>Shimmering Pixel-Grid Animation</h1>
+        <p>Scroll down to see the animation pause when it leaves the viewport.</p>
+    </div>
+    <div class="dot-field"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script type="module">
+        gsap.registerPlugin(ScrollTrigger);
+
+        const container = document.querySelector('.dot-field');
+        const app = new PIXI.Application({
+            width: container.clientWidth,
+            height: container.clientHeight,
+            backgroundColor: 0x000000,
+            backgroundAlpha: 0,
+            antialias: false,
+            autoDensity: true,
+            resolution: window.devicePixelRatio,
+        });
+
+        container.appendChild(app.view);
+
+        const fragmentShader = `
+            precision mediump float;
+            varying vec2 vTextureCoord;
+            uniform float uTime;
+            uniform float uCell;
+            uniform vec2 uResolution;
+
+            float hash(vec2 p) {
+                p = fract(p * vec2(123.34, 345.45));
+                p += dot(p, p + 34.345);
+                return fract(p.x * p.y);
+            }
+
+            void main() {
+                vec2 pix = vTextureCoord * uResolution;
+                vec2 cell = floor(pix / uCell);
+                float phase = hash(cell) * 6.283185; // random 0-2π
+                float a = 0.5 + 0.5 * sin(uTime + phase);
+                a *= a; // longer low tail
+                gl_FragColor = vec4(1.0, 1.0, 1.0, a);
+            }
+        `;
+
+        const filter = new PIXI.Filter(undefined, fragmentShader, {
+            uCell: 4.0,
+            uTime: 0,
+            uResolution: [app.screen.width, app.screen.height],
+        });
+
+        const rect = new PIXI.Graphics();
+        rect.beginFill(0xffffff);
+        rect.drawRect(0, 0, app.screen.width, app.screen.height);
+        rect.endFill();
+        rect.filters = [filter];
+        app.stage.addChild(rect);
+
+        const CLOCK = { t: 0 };
+        const timeline = gsap.to(CLOCK, {
+            t: Math.PI * 2,
+            ease: 'none',
+            duration: 2,
+            repeat: -1
+        });
+
+        app.ticker.add(() => {
+            filter.uniforms.uTime = CLOCK.t;
+        });
+
+        window.onload = () => {
+            ScrollTrigger.create({
+                trigger: ".dot-field",
+                start: "top bottom",
+                end: "bottom top",
+                markers: true,
+                onEnter: () => {
+                    console.log("ScrollTrigger: Enter");
+                    timeline.play();
+                },
+                onLeave: () => {
+                    console.log("ScrollTrigger: Leave");
+                    timeline.pause();
+                },
+                onEnterBack: () => {
+                    console.log("ScrollTrigger: Enter Back");
+                    timeline.play();
+                },
+                onLeaveBack: () => {
+                    console.log("ScrollTrigger: Leave Back");
+                    timeline.pause();
+                },
+            });
+        };
+
+        window.addEventListener('resize', () => {
+            app.renderer.resize(container.clientWidth, container.clientHeight);
+            filter.uniforms.uResolution = [app.screen.width, app.screen.height];
+            rect.width = app.screen.width;
+            rect.height = app.screen.height;
+        });
+    </script>
+</body>
+</html>
