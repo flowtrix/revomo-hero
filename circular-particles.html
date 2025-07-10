@@ -116,8 +116,8 @@
             constructor() {
                 this.container = document.getElementById('circular-particle-container');
                 this.particles = [];
-                this.maxParticles = 300; // Total particles across all directions (increased for 9 directions)
-                this.spawnRate = 1500; // Spawn interval in milliseconds (even slower spawning)
+                this.maxParticles = 360; // Total particles across all directions (18 directions * 20 particles each)
+                this.spawnRate = 800; // Spawn interval in milliseconds (faster spawning)
                 this.spawnInterval = null;
 
                 // Particle settings
@@ -125,17 +125,27 @@
                 this.maxSize = 14;
                 this.shapeTypes = ['circle', 'star']; // Only circles and stars
 
-                // Circular directions: wider top coverage for more horizontal spread
+                // Circular directions: Full 360° coverage with 18 evenly spaced directions
                 this.directions = [
-                    { name: 'quarter-left', angle: 160 },      // Quarter left (slightly upward)
-                    { name: 'left-top', angle: 135 },          // Left-top diagonal
-                    { name: 'top-left-wide', angle: 110 },     // Wide top-left
-                    { name: 'top-left', angle: 100 },          // Top-left
-                    { name: 'top', angle: 90 },                // Straight up
-                    { name: 'top-right', angle: 80 },          // Top-right
-                    { name: 'top-right-wide', angle: 70 },     // Wide top-right
-                    { name: 'top-right-diagonal', angle: 45 }, // Top-right diagonal
-                    { name: 'quarter-right', angle: 20 }       // Quarter right (slightly upward)
+                    { name: 'right', angle: 0 },                // Right (0°)
+                    { name: 'right-down-1', angle: 20 },        // Right-down (20°)
+                    { name: 'right-down-2', angle: 40 },        // Right-down (40°)
+                    { name: 'down-right', angle: 60 },          // Down-right (60°)
+                    { name: 'down-right-2', angle: 80 },        // Down-right (80°)
+                    { name: 'down', angle: 90 },                // Down (90°)
+                    { name: 'down-left-1', angle: 100 },        // Down-left (100°)
+                    { name: 'down-left-2', angle: 120 },        // Down-left (120°)
+                    { name: 'left-down', angle: 140 },          // Left-down (140°)
+                    { name: 'left-down-2', angle: 160 },        // Left-down (160°)
+                    { name: 'left', angle: 180 },               // Left (180°)
+                    { name: 'left-up-1', angle: 200 },          // Left-up (200°)
+                    { name: 'left-up-2', angle: 220 },          // Left-up (220°)
+                    { name: 'up-left', angle: 240 },            // Up-left (240°)
+                    { name: 'up-left-2', angle: 260 },          // Up-left (260°)
+                    { name: 'up', angle: 280 },                 // Up (280°)
+                    { name: 'up-right-1', angle: 300 },         // Up-right (300°)
+                    { name: 'up-right-2', angle: 320 },         // Up-right (320°)
+                    { name: 'right-up', angle: 340 }            // Right-up (340°)
                 ];
 
                 this.setupResizeHandler();
@@ -248,13 +258,13 @@
                 const containerCenterX = containerWidth / 2; // 625
                 const containerCenterY = containerHeight / 2; // 339.5
 
-                // Spawn particles in all 9 directions simultaneously
+                // Spawn particles in all 18 directions simultaneously
                 this.directions.forEach((direction, index) => {
                     const particle = this.createParticle();
 
-                    // Start particles from very bottom area with slight offset
-                    const startX = containerCenterX + (Math.random() - 0.5) * 30;
-                    const startY = containerHeight * 0.95 + (Math.random() - 0.5) * 20; // Start from bottom 95% area (much lower)
+                    // Start particles from very bottom area with more variation
+                    const startX = containerCenterX + (Math.random() - 0.5) * 160; // Increased from 30 to 160
+                    const startY = containerHeight * 0.95 + (Math.random() - 0.5) * 60; // Increased from 20 to 60
 
                     // Position the particle in container coordinates
                     gsap.set(particle.element, {
@@ -278,20 +288,47 @@
                 const containerWidth = 1250;
                 const containerHeight = 679;
 
-                // Convert angle to radians
-                const angleRad = direction.angle * Math.PI / 180;
+                // Add random variation to the base angle (±12 degrees)
+                const angleVariation = (Math.random() - 0.5) * 24; // ±12 degrees
+                const adjustedAngle = direction.angle + angleVariation;
 
-                // Calculate travel distance based on direction - reduced for shorter travel
-                let travelDistance = 800 + Math.random() * 600; // 800-1400 pixels travel
+                // Convert adjusted angle to radians
+                const angleRad = adjustedAngle * Math.PI / 180;
+
+                // Calculate travel distance based on direction - increased for longer travel
+                let travelDistance = 700 + Math.random() * 400; // 700-1100 pixels travel
 
                 // Apply 75% distance limit for all directions for optimal visual effect
                 travelDistance = travelDistance * 0.75; // 75% of the full calculated distance
 
-                // Calculate end position based on angle
+                // Calculate base end position
                 const endX = startX + Math.cos(angleRad) * travelDistance;
                 const endY = startY - Math.sin(angleRad) * travelDistance; // Negative because Y increases downward
 
-                const duration = 20 + Math.random() * 10; // 20-30 seconds for a faster, but still smooth movement
+                // Create curved path with waypoints
+                const waypoint1Distance = travelDistance * 0.33; // 33% of total distance
+                const waypoint2Distance = travelDistance * 0.66; // 66% of total distance
+
+                // Calculate waypoint positions along the main path
+                const waypoint1BaseX = startX + Math.cos(angleRad) * waypoint1Distance;
+                const waypoint1BaseY = startY - Math.sin(angleRad) * waypoint1Distance;
+                const waypoint2BaseX = startX + Math.cos(angleRad) * waypoint2Distance;
+                const waypoint2BaseY = startY - Math.sin(angleRad) * waypoint2Distance;
+
+                // Add perpendicular offsets to create curves
+                const perpAngle = angleRad + Math.PI / 2; // Perpendicular to travel direction
+                const curveIntensity = 30 + Math.random() * 40; // Random curve intensity (30-70px)
+
+                // Random curve direction (left or right)
+                const curveDirection = Math.random() < 0.5 ? -1 : 1;
+
+                // Apply curve offsets to waypoints
+                const waypoint1X = waypoint1BaseX + Math.cos(perpAngle) * curveIntensity * curveDirection * 0.7;
+                const waypoint1Y = waypoint1BaseY - Math.sin(perpAngle) * curveIntensity * curveDirection * 0.7;
+                const waypoint2X = waypoint2BaseX + Math.cos(perpAngle) * curveIntensity * curveDirection * 0.4;
+                const waypoint2Y = waypoint2BaseY - Math.sin(perpAngle) * curveIntensity * curveDirection * 0.4;
+
+                const duration = 15 + Math.random() * 7; // 15-22 seconds for slightly faster movement
 
                 // Get the final opacity from the element itself, which was set in createParticle
                 const finalOpacity = particle.element.getAttribute('opacity');
@@ -307,14 +344,28 @@
                     duration: 4,
                     ease: "power2.out"
                 })
-                    // Move in direction with slower rotation
+                    // Curved movement through waypoints
+                    .to(particle.element, {
+                        x: waypoint1X,
+                        y: waypoint1Y,
+                        rotation: `+=${(Math.random() - 0.5) * 30}`,
+                        duration: duration * 0.33,
+                        ease: "power1.inOut"
+                    }, 0)
+                    .to(particle.element, {
+                        x: waypoint2X,
+                        y: waypoint2Y,
+                        rotation: `+=${(Math.random() - 0.5) * 30}`,
+                        duration: duration * 0.33,
+                        ease: "power1.inOut"
+                    }, duration * 0.33)
                     .to(particle.element, {
                         x: endX,
                         y: endY,
-                        rotation: `+=${(Math.random() - 0.5) * 60}`, // Further reduced rotation for ultra gentle movement
-                        duration: duration,
-                        ease: "power1.out" // Gentler easing for slower feel
-                    }, 0)
+                        rotation: `+=${(Math.random() - 0.5) * 30}`,
+                        duration: duration * 0.34,
+                        ease: "power1.out"
+                    }, duration * 0.66)
                     // Smooth fade out with autoAlpha towards the end
                     .to(particle.element, {
                         autoAlpha: 0,
@@ -347,8 +398,8 @@
                     this.spawnCircularBurst();
                 }, this.spawnRate);
 
-                // Initial burst for immediate effect (slower start)
-                setTimeout(() => this.spawnCircularBurst(), 1000);
+                // Initial burst for immediate effect (faster start)
+                setTimeout(() => this.spawnCircularBurst(), 500);
 
                 console.log('Circular particle animation started');
             }
