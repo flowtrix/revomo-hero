@@ -501,6 +501,10 @@ body {
         scale: 1.206 !important;
     }
 
+    #revomo-animation {
+        top: 65em;
+    }
+
     #particle-container,
     #falling-particles {
         scale: 1.206 !important;
@@ -541,7 +545,7 @@ body {
 }
 
 /* Mobile - 260px target (19% reduction from large phone) */
-@media (max-width: 480px) {
+@media (max-width: 500px) {
     .svg-animation-container {
         scale: 1.012 !important;
     }
