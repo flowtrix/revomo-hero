@@ -116,7 +116,7 @@
             constructor() {
                 this.container = document.getElementById('circular-particle-container');
                 this.particles = [];
-                this.maxParticles = 500; // Increased to accommodate faster spawn rate (18 particles every 1.0s)
+                this.maxParticles = 350; // Recalculated for 20% slower movement (10-14s + 2.5s fade = max 297 particles needed)
                 this.spawnRate = 1000; // Spawn interval in milliseconds (balanced spawning)
                 this.spawnInterval = null;
 
@@ -328,7 +328,7 @@
                 const waypoint2X = waypoint2BaseX + Math.cos(perpAngle) * curveIntensity * curveDirection * 0.4;
                 const waypoint2Y = waypoint2BaseY - Math.sin(perpAngle) * curveIntensity * curveDirection * 0.4;
 
-                const duration = 15 + Math.random() * 7; // 15-22 seconds for slightly faster movement
+                const duration = 10 + Math.random() * 4; // 10-14 seconds for 20% slower movement
 
                 // Get the final opacity from the element itself, which was set in createParticle
                 const finalOpacity = particle.element.getAttribute('opacity');
@@ -369,9 +369,9 @@
                     // Smooth fade out with autoAlpha towards the end
                     .to(particle.element, {
                         autoAlpha: 0,
-                        duration: 0.5,
+                        duration: 2.5,
                         ease: "power2.in"
-                    }, ">-0.5");
+                    }, ">-2.5");
             }
 
             removeParticle(particle) {
