@@ -549,12 +549,12 @@ body {
 /* Small Mobile - 220px target (15% reduction from mobile) */
 @media (max-width: 360px) {
     .svg-animation-container {
-        scale: 0.404 !important;
+        scale: 0.785 !important;
     }
 
     #particle-container,
     #falling-particles {
-        scale: 0.404 !important;
+        scale: 0.785 !important;
     }
 }
 
