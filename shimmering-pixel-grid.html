@@ -8,19 +8,25 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #111;
-            color: white;
+            background-color: transparent;
+            color: #000000;
             font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         .dot-field {
-            width: 580px;
-            height: 580px;
+            width: 80vw;
+            height: 80vw;
+            max-width: 800px;
+            max-height: 800px;
             margin: 2rem auto; /* Center the canvas */
         }
         .content {
             padding: 2rem;
             text-align: center;
-            height: 200vh; /* Make page scrollable to test ScrollTrigger */
         }
     </style>
 </head>
@@ -32,104 +38,145 @@
     <div class="dot-field"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
     <script type="module">
-        gsap.registerPlugin(ScrollTrigger);
 
         const container = document.querySelector('.dot-field');
+
         const app = new PIXI.Application({
+
             width: container.clientWidth,
+
             height: container.clientHeight,
-            backgroundColor: 0x000000,
-            backgroundAlpha: 0,
-            antialias: false,
+
+            backgroundColor: 0x100E19,
+
+            backgroundAlpha: 1,
+
+            antialias: true,
+
             autoDensity: true,
+
             resolution: window.devicePixelRatio,
+
         });
 
         container.appendChild(app.view);
 
         const fragmentShader = `
+
             precision mediump float;
+
             varying vec2 vTextureCoord;
-            uniform float uTime;
-            uniform float uCell;
+
             uniform vec2 uResolution;
 
-            float hash(vec2 p) {
-                p = fract(p * vec2(123.34, 345.45));
-                p += dot(p, p + 34.345);
-                return fract(p.x * p.y);
-            }
+            uniform float uGridSize;
+
+            uniform float uTime;
 
             void main() {
-                vec2 pix = vTextureCoord * uResolution;
-                vec2 cell = floor(pix / uCell);
-                float phase = hash(cell) * 6.283185; // random 0-2π
-                float a = 0.5 + 0.5 * sin(uTime + phase);
-                a *= a; // longer low tail
-                gl_FragColor = vec4(1.0, 1.0, 1.0, a);
+
+                vec2 coord = vTextureCoord * uResolution;
+
+                // Global circle mask setup
+
+                vec2 canvasCenter = uResolution / 2.5;
+
+                float circleRadius = min(uResolution.x, uResolution.y) * 0.3;
+
+                float distToCenter = length(coord - canvasCenter);
+
+                float circleEdge = circleRadius * 0.4;
+
+                float circleMask = smoothstep(circleRadius, circleRadius - circleEdge, distToCenter);
+
+                // Soft circular mask without gooey
+
+                float gridSize = uGridSize;
+
+                float squareSize = 1.5;
+
+                float gap = (gridSize - squareSize) / 2.0;
+
+                float radius = squareSize / 2.0;
+
+                vec2 cell = floor(coord / gridSize);
+
+                vec2 posInCell = mod(coord, gridSize);
+
+                vec2 center = vec2(gridSize / 2.0, gridSize / 2.0);
+
+                float dist = length(posInCell - center);
+
+                float edge = 0.2;
+
+                float mask = smoothstep(radius + edge, radius - edge, dist);
+
+                float random = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453);
+
+                float opacity = 0.5 + 0.5 * sin(uTime * 2.0 + random * 6.28318);
+
+                vec3 bgColor = vec3(16.0/255.0, 14.0/255.0, 25.0/255.0);
+
+                vec3 dotColor = vec3(126.0/255.0, 101.0/255.0, 187.0/255.0);
+
+                vec3 innerColor = mix(bgColor, dotColor, mask * opacity);
+
+                vec3 color = mix(bgColor, innerColor, circleMask);
+
+                gl_FragColor = vec4(color, 1.0);
+
             }
+
         `;
 
-        const filter = new PIXI.Filter(undefined, fragmentShader, {
-            uCell: 4.0,
-            uTime: 0,
+        const uniforms = {
+
+            uGridSize: 2.0,
+
             uResolution: [app.screen.width, app.screen.height],
-        });
 
-        const rect = new PIXI.Graphics();
-        rect.beginFill(0xffffff);
-        rect.drawRect(0, 0, app.screen.width, app.screen.height);
-        rect.endFill();
-        rect.filters = [filter];
-        app.stage.addChild(rect);
+            uTime: 0.0,
 
-        const CLOCK = { t: 0 };
-        const timeline = gsap.to(CLOCK, {
-            t: Math.PI * 2,
-            ease: 'none',
-            duration: 2,
-            repeat: -1
-        });
-
-        app.ticker.add(() => {
-            filter.uniforms.uTime = CLOCK.t;
-        });
-
-        window.onload = () => {
-            ScrollTrigger.create({
-                trigger: ".dot-field",
-                start: "top bottom",
-                end: "bottom top",
-                markers: true,
-                onEnter: () => {
-                    console.log("ScrollTrigger: Enter");
-                    timeline.play();
-                },
-                onLeave: () => {
-                    console.log("ScrollTrigger: Leave");
-                    timeline.pause();
-                },
-                onEnterBack: () => {
-                    console.log("ScrollTrigger: Enter Back");
-                    timeline.play();
-                },
-                onLeaveBack: () => {
-                    console.log("ScrollTrigger: Leave Back");
-                    timeline.pause();
-                },
-            });
         };
 
+        const filter = new PIXI.Filter(undefined, fragmentShader, uniforms);
+
+        const rect = new PIXI.Graphics();
+
+        rect.beginFill(0x100E19);
+
+        rect.drawRect(0, 0, app.screen.width, app.screen.height);
+
+        rect.endFill();
+
+        rect.filters = [filter];
+
+        app.stage.addChild(rect);
+
         window.addEventListener('resize', () => {
+
             app.renderer.resize(container.clientWidth, container.clientHeight);
-            filter.uniforms.uResolution = [app.screen.width, app.screen.height];
+
+            uniforms.uResolution = [app.screen.width, app.screen.height];
+
             rect.width = app.screen.width;
+
             rect.height = app.screen.height;
+
         });
+
+        let time = 0;
+
+        app.ticker.add((delta) => {
+
+            time += delta / 60;
+
+            uniforms.uTime = time;
+
+        });
+
     </script>
 </body>
 </html>
