@@ -519,17 +519,19 @@ body {
     }
 
     .mobile-background-layer {
-        display: none;
+        display: flex;
+        justify-content: center;
         width: 100%;
         height: 100%;
         position: relative;
         padding: 0 6.5em;
-        margin-top: 247.625em;
+        margin-top: 300em;
     }
 
     .mobile-background-layer-content {
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 3em;
     }
 }
