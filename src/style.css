@@ -36,6 +36,10 @@ body {
     overflow-x: hidden;
     min-height: 100vh;
     font-size: 0.5208333333vw;
+
+    @media (max-width: 768px) {
+        font-size: 0.8333vw;
+    }
 }
 
 /* Hero Section */
@@ -270,6 +274,10 @@ body {
     -webkit-mask-image: radial-gradient(circle at center, #0d0c14 20%, transparent 100%);
 }
 
+.mobile-background-layer {
+    display: none;
+}
+
 /* Remove blur when hovering any background layer figure */
 /* .background-layer:hover {
     filter: blur(0px);
@@ -490,48 +498,63 @@ body {
 /* Tablet - 480px target (29% reduction from 680px desktop) */
 @media (max-width: 1024px) {
     .svg-animation-container {
-        scale: 0.706 !important;
+        scale: 0.906 !important;
     }
 
     #particle-container,
     #falling-particles {
-        scale: 0.706 !important;
+        scale: 0.906 !important;
     }
 }
 
 /* Large Phone - 320px target (33% reduction from tablet) */
 @media (max-width: 768px) {
     .svg-animation-container {
-        scale: 0.471 !important;
+        scale: 1.682 !important;
     }
 
     #particle-container,
     #falling-particles {
-        scale: 0.471 !important;
+        scale: 1.682 !important;
+    }
+
+    .mobile-background-layer {
+        display: block;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        padding: 0 6.5em;
+        margin-top: 247.625em;
+    }
+
+    .mobile-background-layer-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3em;
     }
 }
 
 /* Mobile - 260px target (19% reduction from large phone) */
 @media (max-width: 480px) {
     .svg-animation-container {
-        scale: 0.382 !important;
+        scale: 2.082 !important;
     }
 
     #particle-container,
     #falling-particles {
-        scale: 0.382 !important;
+        scale: 2.082 !important;
     }
 }
 
 /* Small Mobile - 220px target (15% reduction from mobile) */
 @media (max-width: 360px) {
     .svg-animation-container {
-        scale: 0.324 !important;
+        scale: 1.624 !important;
     }
 
     #particle-container,
     #falling-particles {
-        scale: 0.324 !important;
+        scale: 1.624 !important;
     }
 }
 
