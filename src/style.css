@@ -513,6 +513,10 @@ body {
         scale: 0.982 !important;
     }
 
+    #revomo-animation {
+        top: 40em;
+    }
+
     #particle-container,
     #falling-particles {
         scale: 0.982 !important;
@@ -542,6 +546,14 @@ body {
         scale: 1.012 !important;
     }
 
+    #revomo-animation {
+        top: 65em;
+    }
+
+    .mobile-background-layer {
+        margin-top: 460em;
+    }
+
     #particle-container,
     #falling-particles {
         scale: 1.012 !important;
@@ -554,9 +566,17 @@ body {
         scale: 0.785 !important;
     }
 
+    #revomo-animation {
+        top: 90em;
+    }
+
     #particle-container,
     #falling-particles {
         scale: 0.785 !important;
+    }
+
+    .mobile-background-layer {
+        margin-top: 600em;
     }
 }
 
