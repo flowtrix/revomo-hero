@@ -116,8 +116,8 @@
             constructor() {
                 this.container = document.getElementById('circular-particle-container');
                 this.particles = [];
-                this.maxParticles = 360; // Total particles across all directions (18 directions * 20 particles each)
-                this.spawnRate = 800; // Spawn interval in milliseconds (faster spawning)
+                this.maxParticles = 500; // Increased to accommodate faster spawn rate (18 particles every 1.0s)
+                this.spawnRate = 1000; // Spawn interval in milliseconds (balanced spawning)
                 this.spawnInterval = null;
 
                 // Particle settings
@@ -398,8 +398,8 @@
                     this.spawnCircularBurst();
                 }, this.spawnRate);
 
-                // Initial burst for immediate effect (faster start)
-                setTimeout(() => this.spawnCircularBurst(), 500);
+                // Initial burst for immediate effect (balanced start)
+                setTimeout(() => this.spawnCircularBurst(), 600);
 
                 console.log('Circular particle animation started');
             }
