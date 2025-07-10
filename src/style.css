@@ -498,24 +498,24 @@ body {
 /* Tablet - 480px target (29% reduction from 680px desktop) */
 @media (max-width: 1024px) {
     .svg-animation-container {
-        scale: 0.906 !important;
+        scale: 1.206 !important;
     }
 
     #particle-container,
     #falling-particles {
-        scale: 0.906 !important;
+        scale: 1.206 !important;
     }
 }
 
 /* Large Phone - 320px target (33% reduction from tablet) */
 @media (max-width: 768px) {
     .svg-animation-container {
-        scale: .582 !important;
+        scale: 0.982 !important;
     }
 
     #particle-container,
     #falling-particles {
-        scale: .582 !important;
+        scale: 0.982 !important;
     }
 
     .mobile-background-layer {
