@@ -17,7 +17,6 @@ export default defineConfig({
                 main: resolve(__dirname, 'index.html'),
                 footer: resolve(__dirname, 'footer.html'),
                 circularParticles: resolve(__dirname, 'circular-particles.html'),
-                shimmeringPixelGrid: resolve(__dirname, 'shimmering-pixel-grid.html')
             },
             output: {
                 manualChunks: {
