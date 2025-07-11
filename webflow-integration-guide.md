@@ -1,249 +1,373 @@
-# Webflow Integration Guide: Shimmering Pixel-Grid Background
+# Water Fallen Animation - Webflow Integration Guide
 
 ## Overview
-This guide will help you integrate the shimmering pixel-grid animation into your Webflow project as a background element inside any container.
+This guide will help you integrate the Water Fallen animation into your Webflow project. The animation features SVG path drawing, particle effects, and scroll-triggered animations.
 
-## Step 1: Prepare Your Webflow Project
+## What You'll Need
+- GSAP library access in Webflow
+- Custom code capabilities in Webflow
+- Basic understanding of Webflow's embed components
 
-1. **Open your Webflow project** and navigate to the page where you want to add the background
-2. **Identify the container** where you want the background to appear
-3. **Set the container's position** to `Relative` in the Style panel (this is important for absolute positioning)
+## Step 1: Add GSAP Libraries
 
-## Step 2: Add the Background Container
-
-1. **Inside your target container**, add a new `Div Block`
-2. **Give it a class name** like `pixel-grid-background`
-3. **Set the following styles** for this div:
-   - Position: `Absolute`
-   - Top: `0px`
-   - Left: `0px`
-   - Right: `0px`
-   - Bottom: `0px`
-   - Z-index: `-1` (to keep it behind other content)
-   - Width: `100%`
-   - Height: `100%`
-
-## Step 3: Add Custom Code
-
-### Option A: Using Webflow's Custom Code (Recommended)
-
-1. **Go to your page settings** or site settings
-2. **Navigate to the Custom Code section**
-3. **In the "Before </body> tag" section**, add the following code:
+Add these script tags to your page's **Before `</body>` tag** section in Page Settings:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+```
 
-<script type="module">
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize the pixel grid background
-    function initPixelGrid() {
-        const container = document.querySelector('.pixel-grid-background');
-        if (!container) return;
+## Step 2: Add CSS Styles
 
-        const app = new PIXI.Application({
-            width: container.clientWidth,
-            height: container.clientHeight,
-            backgroundColor: 0x0D0C14,
-            backgroundAlpha: 1,
-            antialias: true,
-            autoDensity: true,
-            resolution: window.devicePixelRatio,
-        });
+Add this CSS to your page's **Inside `<head>` tag** section in Page Settings:
 
-        container.appendChild(app.view);
+```css
+<style>
+.water-fallen-animation {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 400px; /* Adjust as needed */
+}
 
-        const fragmentShader = `
-            precision mediump float;
-            varying vec2 vTextureCoord;
-            uniform vec2 uResolution;
-            uniform float uGridSize;
-            uniform float uTime;
-            uniform float uRevealProgress;
+.water-fallen-svg {
+    max-width: 100%;
+    height: auto;
+}
 
-            void main() {
-                vec2 coord = vTextureCoord * uResolution;
-
-                // Global circle mask setup
-                vec2 canvasCenter = uResolution / 2.5;
-                float circleRadius = min(uResolution.x, uResolution.y) * 0.3 * uRevealProgress;
-                float circleEdge = circleRadius * 0.7;
-                float distToCenter = length(coord - canvasCenter);
-                float circleMask = smoothstep(circleRadius, circleRadius - circleEdge, distToCenter);
-
-                // Grid calculations
-                float gridSize = uGridSize;
-                float squareSize = 1.5;
-                float gap = (gridSize - squareSize) / 2.0;
-                float radius = squareSize / 2.0;
-                vec2 cell = floor(coord / gridSize);
-                vec2 posInCell = mod(coord, gridSize);
-                vec2 center = vec2(gridSize / 2.0, gridSize / 2.0);
-                float dist = length(posInCell - center);
-                float edge = 0.2;
-                float mask = smoothstep(radius + edge, radius - edge, dist);
-                float random = fract(sin(dot(cell, vec2(12.9898, 78.233))) * 43758.5453);
-                float opacity = 0.5 + 0.5 * sin(uTime * 2.0 + random * 6.28318);
-
-                                 // Colors
-                 vec3 bgColor = vec3(13.0/255.0, 12.0/255.0, 20.0/255.0);
-                 vec3 dotColor = vec3(126.0/255.0, 101.0/255.0, 187.0/255.0);
-                vec3 innerColor = mix(bgColor, dotColor, mask * opacity);
-                vec3 color = mix(bgColor, innerColor, circleMask);
-
-                gl_FragColor = vec4(color, 1.0);
-            }
-        `;
-
-        const uniforms = {
-            uGridSize: 2.0,
-            uResolution: [app.screen.width, app.screen.height],
-            uTime: 0.0,
-            uRevealProgress: 0.0,
-        };
-
-                 const filter = new PIXI.Filter(undefined, fragmentShader, uniforms);
-         const rect = new PIXI.Graphics();
-         rect.beginFill(0x0D0C14);
-         rect.drawRect(0, 0, app.screen.width, app.screen.height);
-        rect.endFill();
-        rect.filters = [filter];
-        app.stage.addChild(rect);
-
-        // Handle resize
-        function handleResize() {
-            app.renderer.resize(container.clientWidth, container.clientHeight);
-            uniforms.uResolution = [app.screen.width, app.screen.height];
-            rect.width = app.screen.width;
-            rect.height = app.screen.height;
-        }
-
-        window.addEventListener('resize', handleResize);
-
-        // Animation loop
-        let time = 0;
-        app.ticker.add((delta) => {
-            time += delta / 60;
-            uniforms.uTime = time;
-        });
-
-        // GSAP animation with ScrollTrigger
-        gsap.registerPlugin(ScrollTrigger);
-        gsap.to(uniforms, {
-            uRevealProgress: 1,
-            duration: 1.5,
-            ease: "power3.out",
-            scrollTrigger: {
-                trigger: container,
-                start: "top 80%",
-                once: true,
-            }
-        });
-
-        // Clean up function
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            app.destroy(true);
-        };
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .water-fallen-animation {
+        min-height: 300px;
     }
+}
+</style>
+```
 
-    // Initialize when DOM is ready
-    initPixelGrid();
+## Step 3: Create the HTML Structure in Webflow
+
+1. **Add a Section** where you want the animation
+2. **Add a Div Block** inside the section
+3. **Give the Div Block** the class name: `water-fallen-animation`
+4. **Add an Embed Component** inside the div
+5. **Paste the SVG code** (see below) into the embed component
+
+### SVG Code for Embed Component:
+
+```html
+<svg class="water-fallen-svg" id="water-fallen-svg" width="650" height="364" viewBox="0 0 650 364" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g style="mix-blend-mode:plus-lighter" opacity="0.2">
+        <path class="water-path" d="M647.466 298.781C641.363 266.91 621.372 233.668 521.403 217.065C386.508 194.662 329.268 173.565 325.5 83.4177C321.721 173.565 264.388 194.662 129.494 217.065C29.5247 233.668 9.53401 266.91 3.43102 298.781C2.08454 305.813 7.76811 312.065 14.9275 312.065H325.457H325.501H635.969C643.129 312.065 648.812 305.813 647.466 298.781Z" fill="url(#paint0_linear_2120_3387)" />
+    </g>
+    <mask id="mask0_2120_3387" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="226" y="49" width="201" height="201">
+        <circle cx="100" cy="100" r="100" transform="matrix(1 0 0 -1 226.92 250)" fill="#D9D9D9" />
+    </mask>
+    <g mask="url(#mask0_2120_3387)">
+        <g clip-path="url(#clip0_2120_3387)" filter="url(#filter0_dd_2120_3387)">
+            <rect width="320" height="48" transform="matrix(-8.58221e-08 1 1 2.22633e-08 301.42 1.99988)" fill="url(#paint1_linear_2120_3387)" />
+            <g style="mix-blend-mode:plus-lighter" opacity="0.3">
+                <rect width="382.092" height="48.0001" transform="matrix(-1.04068e-07 1 1 1.836e-08 301.42 -38.0001)" fill="url(#paint2_linear_2120_3387)" fill-opacity="0.3" />
+            </g>
+        </g>
+    </g>
+    <path id="central-path" d="M325.42 327L325.42 27" stroke="url(#paint3_linear_2120_3387)" stroke-width="2" />
+    <path class="water-path" d="M647.466 298.781C641.363 266.91 621.372 233.668 521.403 217.065C386.508 194.662 329.268 173.565 325.5 83.4177C321.721 173.565 264.388 194.662 129.494 217.065C29.5247 233.668 9.53401 266.91 3.43102 298.781C2.08454 305.813 7.76811 312.065 14.9275 312.065H325.457H325.501H635.969C643.129 312.065 648.812 305.813 647.466 298.781Z" fill="url(#paint5_linear_2120_3387)" />
+    <mask id="mask1_2120_3387" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="3" y="54" width="645" height="259">
+        <path class="water-path" d="M647.466 298.781C641.363 266.91 621.372 233.668 521.403 217.065C386.508 194.662 329.268 173.565 325.5 83.4177C321.721 173.565 264.388 194.662 129.494 217.065C29.5247 233.668 9.53401 266.91 3.43102 298.781C2.08454 305.813 7.76811 312.065 14.9275 312.065H325.457H325.501H635.969C643.129 312.065 648.812 305.813 647.466 298.781Z" fill="url(#paint6_linear_2120_3387)" />
+    </mask>
+    <g mask="url(#mask1_2120_3387)">
+        <g style="mix-blend-mode:hard-light" opacity="0.42">
+            <path class="water-path" d="M647.466 298.781C641.363 266.91 621.372 233.668 521.403 217.065C386.508 194.662 329.268 173.565 325.5 83.4177C321.721 173.565 264.388 194.662 129.494 217.065C29.5247 233.668 9.53401 266.91 3.43102 298.781C2.08454 305.813 7.76811 312.065 14.9275 312.065H325.457H325.501H635.969C643.129 312.065 648.812 305.813 647.466 298.781Z" fill="url(#paint7_linear_2120_3387)" />
+        </g>
+        <g style="mix-blend-mode:plus-lighter" opacity="0.66" filter="url(#filter1_f_2120_3387)">
+            <path d="M551.561 264.318C547.275 241.939 533.238 218.597 463.042 206.939C368.323 191.208 328.13 176.395 325.485 113.095C322.831 176.395 282.573 191.208 187.854 206.939C117.658 218.597 103.621 241.939 99.3357 264.318C98.3903 269.255 102.381 273.645 107.408 273.645H325.454H325.485H543.488C548.515 273.645 552.506 269.255 551.561 264.318Z" fill="url(#paint8_linear_2120_3387)" />
+        </g>
+        <g style="mix-blend-mode:plus-lighter" opacity="0.66" filter="url(#filter2_f_2120_3387)">
+            <path d="M551.561 264.318C547.275 241.939 533.238 218.597 463.042 206.939C368.323 191.208 328.13 176.395 325.485 113.095C322.831 176.395 282.573 191.208 187.854 206.939C117.658 218.597 103.621 241.939 99.3357 264.318C98.3903 269.255 102.381 273.645 107.408 273.645H325.454H325.485H543.488C548.515 273.645 552.506 269.255 551.561 264.318Z" fill="url(#paint9_linear_2120_3387)" />
+        </g>
+        <g style="mix-blend-mode:plus-lighter" opacity="0.76" filter="url(#filter3_f_2120_3387)">
+            <path d="M551.561 264.318C547.275 241.939 533.238 218.597 463.042 206.939C368.323 191.208 328.13 176.395 325.485 113.095C322.831 176.395 282.573 191.208 187.854 206.939C117.658 218.597 103.621 241.939 99.3357 264.318C98.3903 269.255 102.381 273.645 107.408 273.645H325.454H325.485H543.488C548.515 273.645 552.506 269.255 551.561 264.318Z" fill="url(#paint10_linear_2120_3387)" />
+        </g>
+        <g style="mix-blend-mode:plus-lighter" opacity="0.58" filter="url(#filter4_f_2120_3387)">
+            <path d="M551.561 304.204C547.275 273.505 533.238 241.485 463.042 225.492C368.323 203.913 328.13 183.592 325.485 96.7581C322.831 183.592 282.573 203.913 187.854 225.492C117.658 241.485 103.621 273.505 99.3357 304.204C98.3903 310.977 102.381 317 107.408 317H325.454H325.485H543.488C548.515 317 552.506 310.977 551.561 304.204Z" fill="url(#paint11_linear_2120_3387)" />
+        </g>
+    </g>
+    <g style="mix-blend-mode:plus-lighter">
+        <path id="right-outer-path" d="M648.948 341C644.949 305.5 634.949 264.932 520.954 246C376.445 222 321.747 200 325.745 92.5V83" stroke="url(#paint12_linear_2120_3387)" stroke-opacity="0.8" stroke-width="2" />
+        <path id="right-inner-path" d="M564.747 363.5C560.748 328 558.744 312.16 451.753 268.5C340.252 223 328.252 210 325.252 92V83" stroke="url(#paint13_linear_2120_3387)" stroke-opacity="0.8" stroke-width="2" />
+    </g>
+    <g style="mix-blend-mode:plus-lighter">
+        <path id="left-outer-path" d="M1.05066 341C5.04971 305.5 15.0498 264.932 129.045 246C273.553 222 329.05 199.5 325.052 92V83" stroke="url(#paint14_linear_2120_3387)" stroke-opacity="0.8" stroke-width="2" />
+        <path id="left-inner-path" d="M85.5571 363.5C89.5561 328 91.5601 312.16 198.551 268.5C310.052 223 322.052 210 325.052 92V83" stroke="url(#paint15_linear_2120_3387)" stroke-opacity="0.8" stroke-width="2" />
+    </g>
+    <circle cx="5" cy="5" r="6.25" transform="matrix(-8.58221e-08 1 1 2.22633e-08 320.42 81.5114)" fill="#7E65BB" stroke="#100E18" stroke-width="2.5" />
+    <g filter="url(#filter5_f_2120_3387)">
+        <circle cx="3.17598" cy="3.17598" r="3.17598" transform="matrix(-8.58221e-08 1 1 2.22633e-08 322.244 83.3355)" fill="#B19AE8" fill-opacity="0.65" />
+        <circle cx="3.17598" cy="3.17598" r="4.42598" transform="matrix(-8.58221e-08 1 1 2.22633e-08 322.244 83.3355)" stroke="#100E18" stroke-width="2.5" />
+    </g>
+    <g style="mix-blend-mode:plus-lighter" filter="url(#filter6_f_2120_3387)">
+        <circle cx="3.90573" cy="3.90573" r="3.90573" transform="matrix(-8.58221e-08 1 1 2.22633e-08 321.515 82.6057)" fill="#B19AE8" fill-opacity="0.4" />
+        <circle cx="3.90573" cy="3.90573" r="5.15573" transform="matrix(-8.58221e-08 1 1 2.22633e-08 321.515 82.6057)" stroke="#100E18" stroke-width="2.5" />
+    </g>
+    <g style="mix-blend-mode:plus-lighter" filter="url(#filter7_f_2120_3387)">
+        <circle cx="3.90573" cy="3.90573" r="3.90573" transform="matrix(-8.58221e-08 1 1 2.22633e-08 321.515 82.6057)" fill="#B19AE8" fill-opacity="0.2" />
+        <circle cx="3.90573" cy="3.90573" r="5.15573" transform="matrix(-8.58221e-08 1 1 2.22633e-08 321.515 82.6057)" stroke="#100E18" stroke-width="2.5" />
+    </g>
+    <defs>
+        <circle id="drop-circle" r="2" fill="#D9C9FF" />
+        <filter id="filter0_dd_2120_3387" x="190.42" y="-109" width="270" height="542" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+            <feOffset />
+            <feGaussianBlur stdDeviation="20" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix type="matrix" values="0 0 0 0 0.0705882 0 0 0 0 0.0666667 0 0 0 0 0.12549 0 0 0 0.4 0" />
+            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2120_3387" />
+            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+            <feMorphology radius="1" operator="dilate" in="SourceAlpha" result="effect2_dropShadow_2120_3387" />
+            <feOffset />
+            <feGaussianBlur stdDeviation="55" />
+            <feComposite in2="hardAlpha" operator="out" />
+            <feColorMatrix type="matrix" values="0 0 0 0 0.0705882 0 0 0 0 0.0666667 0 0 0 0 0.12549 0 0 0 0.2 0" />
+            <feBlend mode="normal" in2="effect1_dropShadow_2120_3387" result="effect2_dropShadow_2120_3387" />
+            <feBlend mode="normal" in="SourceGraphic" in2="effect2_dropShadow_2120_3387" result="shape" />
+        </filter>
+        <filter id="filter1_f_2120_3387" x="19.1963" y="12.4843" width="612.504" height="341.161" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="40" result="effect1_foregroundBlur_2120_3387" />
+        </filter>
+        <filter id="filter2_f_2120_3387" x="82.0963" y="75.3843" width="486.704" height="215.361" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="8.55" result="effect1_foregroundBlur_2120_3387" />
+        </filter>
+        <filter id="filter3_f_2120_3387" x="82.0963" y="75.3843" width="486.704" height="215.361" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="8.55" result="effect1_foregroundBlur_2120_3387" />
+        </filter>
+        <filter id="filter4_f_2120_3387" x="51.1963" y="20.4843" width="548.504" height="344.516" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="24" result="effect1_foregroundBlur_2120_3387" />
+        </filter>
+        <filter id="filter5_f_2120_3387" x="315.873" y="76.9646" width="19.0937" height="19.0937" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="1.93543" result="effect1_foregroundBlur_2120_3387" />
+        </filter>
+        <filter id="filter6_f_2120_3387" x="315.144" y="76.2348" width="20.5532" height="20.5532" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="1.93543" result="effect1_foregroundBlur_2120_3387" />
+        </filter>
+        <filter id="filter7_f_2120_3387" x="315.144" y="76.2348" width="20.5532" height="20.5532" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="1.93543" result="effect1_foregroundBlur_2120_3387" />
+        </filter>
+        <linearGradient id="paint0_linear_2120_3387" x1="325.448" y1="256.487" x2="325.448" y2="54.0649" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#B19AE8" stop-opacity="0" />
+            <stop offset="0.8" stop-color="#B19AE8" />
+        </linearGradient>
+        <linearGradient id="paint1_linear_2120_3387" x1="0" y1="24" x2="320" y2="24" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#100F18" stop-opacity="0" />
+            <stop offset="1" stop-color="#1A1927" />
+        </linearGradient>
+        <linearGradient id="paint2_linear_2120_3387" x1="-0.6447" y1="35.7428" x2="377.337" y2="35.6931" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#BAB4ED" stop-opacity="0" />
+            <stop offset="1" stop-color="#BAB4ED" />
+        </linearGradient>
+        <linearGradient id="paint3_linear_2120_3387" x1="316.06" y1="279.087" x2="313.887" y2="-154.88" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#4F3CA7" />
+            <stop offset="1" stop-color="#D2A9EB" />
+        </linearGradient>
+        <linearGradient id="paint4_linear_2120_3387" x1="316.06" y1="278.826" x2="315.673" y2="95.708" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#F2DCFF" stop-opacity="0" />
+            <stop offset="1" stop-color="#F2DCFF" />
+        </linearGradient>
+        <linearGradient id="paint5_linear_2120_3387" x1="325.448" y1="244.064" x2="325.448" y2="54.0649" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#0E0C15" />
+            <stop offset="0.8" stop-color="#B19AE8" />
+        </linearGradient>
+        <linearGradient id="paint6_linear_2120_3387" x1="325.448" y1="244.064" x2="325.448" y2="54.0649" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#0E0C15" />
+            <stop offset="0.8" stop-color="#B19AE8" />
+        </linearGradient>
+        <linearGradient id="paint7_linear_2120_3387" x1="325.448" y1="244.064" x2="325.448" y2="54.0649" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#B19AE8" stop-opacity="0" />
+            <stop offset="0.8" stop-color="#B19AE8" />
+        </linearGradient>
+        <linearGradient id="paint8_linear_2120_3387" x1="325.448" y1="225.959" x2="325.448" y2="92.4843" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6F3FE3" stop-opacity="0.23" />
+            <stop offset="0.8" stop-color="#6F3FE3" />
+        </linearGradient>
+        <linearGradient id="paint9_linear_2120_3387" x1="325.448" y1="225.959" x2="325.448" y2="92.4843" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#6F3FE3" stop-opacity="0" />
+            <stop offset="0.8" stop-color="#6F3FE3" />
+        </linearGradient>
+        <linearGradient id="paint10_linear_2120_3387" x1="325.448" y1="225.959" x2="325.448" y2="92.4843" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#D9C9FF" stop-opacity="0" />
+            <stop offset="0.8" stop-color="#D9C9FF" />
+        </linearGradient>
+        <linearGradient id="paint11_linear_2120_3387" x1="325.448" y1="251.584" x2="325.448" y2="68.4843" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#D9C9FF" stop-opacity="0" />
+            <stop offset="0.8" stop-color="#D9C9FF" />
+        </linearGradient>
+        <linearGradient id="paint12_linear_2120_3387" x1="649.398" y1="211.5" x2="324.947" y2="211.5" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#201D32" stop-opacity="0" />
+            <stop offset="1" stop-color="#201D32" />
+        </linearGradient>
+        <linearGradient id="paint13_linear_2120_3387" x1="553.254" y1="317.5" x2="317.753" y2="179.499" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#201D32" stop-opacity="0" />
+            <stop offset="1" stop-color="#201D32" />
+        </linearGradient>
+        <linearGradient id="paint14_linear_2120_3387" x1="0.600461" y1="211.5" x2="325.052" y2="211.5" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#201D32" stop-opacity="0" />
+            <stop offset="1" stop-color="#201D32" />
+        </linearGradient>
+        <linearGradient id="paint15_linear_2120_3387" x1="97.0503" y1="317.5" x2="332.551" y2="179.499" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#201D32" stop-opacity="0" />
+            <stop offset="1" stop-color="#201D32" />
+        </linearGradient>
+        <clipPath id="clip0_2120_3387">
+            <rect width="320" height="48" fill="white" transform="matrix(-8.58221e-08 1 1 2.22633e-08 301.42 1.99988)" />
+        </clipPath>
+    </defs>
+</svg>
+```
+
+## Step 4: Add the Animation JavaScript
+
+Add another **Embed Component** below the SVG or add this code to the **Before `</body>` tag** section:
+
+```html
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Register GSAP plugins
+    gsap.registerPlugin(MotionPathPlugin, ScrollTrigger);
+
+    // Get animation elements
+    const animatedPaths = document.querySelectorAll('#central-path, #left-outer-path, #left-inner-path, #right-outer-path, #right-inner-path');
+    const circles = document.querySelectorAll('#water-fallen-svg circle');
+    const waterPaths = document.querySelectorAll('.water-path');
+
+    // Setup path drawing animation
+    animatedPaths.forEach(path => {
+        const pathLength = path.getTotalLength();
+        path.style.strokeDasharray = pathLength;
+        path.style.strokeDashoffset = -pathLength;
+    });
+
+    // Hide elements initially
+    gsap.set(circles, { autoAlpha: 0 });
+    gsap.set(waterPaths, { autoAlpha: 0 });
+
+    // Create the scroll-triggered animation
+    gsap.timeline({
+        scrollTrigger: {
+            trigger: '.water-fallen-animation',
+            start: 'top 80%',          // Animation starts when element is 80% down the viewport
+            end: 'bottom 20%',         // Animation ends when element is 20% up the viewport
+            scrub: 1,                  // Smooth scrubbing (1 second lag)
+            // markers: true,          // Uncomment to see trigger markers during development
+        }
+    })
+    .to(animatedPaths, {
+        strokeDashoffset: 0,
+        duration: 0.5,
+        stagger: 0.01,
+        ease: "power2.out"
+    })
+    .to(circles, {
+        autoAlpha: 1,
+        duration: 0.3,
+        ease: "back.out(1.7)"
+    }, "-=0.5")
+    .to(waterPaths, {
+        autoAlpha: 1,
+        duration: 0.4,
+        stagger: 0.15,
+        ease: "power2.out"
+    }, "-=0.8");
 });
 </script>
 ```
 
-### Option B: Using an Embed Element
+## Step 5: Customization Options
 
-1. **Add an Embed element** inside your container (instead of the div block)
-2. **Paste the following code** into the embed element:
+### Trigger Points
+You can adjust when the animation starts and ends by modifying the ScrollTrigger settings:
 
-```html
-<div class="pixel-grid-background" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; width: 100%; height: 100%;"></div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-
-<script type="module">
-// [Same JavaScript code as above]
-</script>
-```
-
-## Step 4: Customize the Animation
-
-You can customize various aspects of the animation by modifying these values in the JavaScript:
-
-### Colors
 ```javascript
-// Background color (dark purple: #0D0C14)
-vec3 bgColor = vec3(13.0/255.0, 12.0/255.0, 20.0/255.0);
-
-// Dot color (light purple)
-vec3 dotColor = vec3(126.0/255.0, 101.0/255.0, 187.0/255.0);
+scrollTrigger: {
+    trigger: '.water-fallen-animation',
+    start: 'top center',      // Start when top of element hits center of viewport
+    end: 'bottom center',     // End when bottom of element hits center of viewport
+    scrub: 2,                 // Increase for more lag, decrease for snappier animation
+}
 ```
 
-### Grid Size
+### Animation Timing
+Adjust the duration and stagger values to change the animation speed:
+
 ```javascript
-uGridSize: 2.0, // Smaller = more dots, Larger = fewer dots
+.to(animatedPaths, {
+    strokeDashoffset: 0,
+    duration: 1,              // Longer duration = slower animation
+    stagger: 0.05,            // Delay between each path animation
+    ease: "power2.out"
+})
 ```
 
-### Animation Speed
-```javascript
-duration: 1.5, // Reveal animation duration in seconds
-```
+### Background Color
+The animation works best on dark backgrounds. If you need it on a light background, you may need to adjust the gradient colors in the SVG.
 
-### Reveal Position
-```javascript
-start: "top 80%", // When the animation starts (80% from top)
-```
+## Step 6: Testing
 
-## Step 5: Test and Optimize
+1. **Enable markers** during development by uncommenting `// markers: true,` in the ScrollTrigger config
+2. **Preview your site** to test the scroll-triggered animation
+3. **Adjust timing** based on your content flow
+4. **Remove markers** before publishing
 
-1. **Preview your site** to see the animation in action
-2. **Test on different devices** to ensure responsiveness
-3. **Adjust the z-index** if needed to ensure proper layering
-4. **Test scroll performance** - the animation is optimized but monitor performance on slower devices
+## Troubleshooting
 
-## Step 6: Troubleshooting
+### Animation not working?
+- Check that GSAP scripts are loaded before your animation script
+- Ensure the trigger element has the correct class name
+- Check browser console for JavaScript errors
 
-### Common Issues:
+### Animation too fast/slow?
+- Adjust the `scrub` value in ScrollTrigger
+- Modify `duration` values in the timeline
 
-1. **Animation not showing**: Check if the container has the correct class name
-2. **Performance issues**: Consider reducing grid density or adding performance optimizations
-3. **Responsive issues**: Ensure the parent container has proper dimensions
-4. **Z-index conflicts**: Adjust the z-index value to layer properly with other elements
+### SVG not responsive?
+- Ensure the SVG has `max-width: 100%` and `height: auto`
+- Check that the container div has proper responsive settings
 
-### Performance Tips:
+### Multiple animations on one page?
+- Make sure each SVG has a unique ID
+- Update the JavaScript selectors to target the specific SVG
 
-- The animation automatically adjusts to device pixel ratio
-- Uses hardware acceleration through PIXI.js
-- Includes built-in resize handling
-- ScrollTrigger ensures animation only runs when visible
+## Performance Notes
 
-## Additional Customization Options
-
-### Multiple Backgrounds
-To add the same effect to multiple containers:
-1. Use different class names (e.g., `pixel-grid-background-1`, `pixel-grid-background-2`)
-2. Initialize each one separately in the JavaScript
-3. Apply different colors or settings to each
-
-### Static Version
-If you want a static version without scroll trigger:
-```javascript
-// Remove ScrollTrigger and set immediate reveal
-uniforms.uRevealProgress = 1.0;
-```
+- The animation uses GSAP's optimized rendering
+- ScrollTrigger is efficient and won't impact page performance significantly
+- The SVG is lightweight and scalable
 
 ## Browser Compatibility
 
-- **Modern browsers**: Full support (Chrome, Firefox, Safari, Edge)
-- **Mobile devices**: Optimized for mobile performance
-- **Older browsers**: May require PIXI.js polyfills
+- Works in all modern browsers (Chrome, Firefox, Safari, Edge)
+- GSAP has excellent cross-browser support
+- SVG animations are well-supported
 
----
+## Final Notes
 
-**Note**: This implementation is optimized for Webflow and will work as a background element without interfering with your existing content or layout.
+- The animation will automatically adapt to your Webflow section's styling
+- You can place this in any section or container
+- The animation is fully responsive and will scale with your design
+- Consider the animation's visual impact on your overall page design
