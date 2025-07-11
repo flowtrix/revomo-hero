@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Sequential SVG Draw Animation - Circular Particles</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0D0C14;
+            overflow-x: hidden;
+            min-height: 100vh;
+            font-size: 0.5208333333vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .spacer {
+            height: 200vh;
+        }
+
+        .container {
+            position: relative;
+        }
+
+        /* Initial states for animated elements */
+        .small-circle {
+            opacity: 0;
+            transform-origin: center;
+            transform: scale(0);
+        }
+
+        .medium-circle {
+            opacity: 0;
+            transform-origin: center;
+            transform: scale(0);
+        }
+
+        .large-circle {
+            opacity: 0;
+            transform-origin: center;
+            transform: scale(0);
+        }
+
+        .triangle-path {
+            stroke: #7A42EB;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            opacity: 0;
+            stroke-dasharray: 20;
+            stroke-dashoffset: 20;
+        }
+
+        .star-path {
+            stroke: #ACA0E4;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            opacity: 0;
+            stroke-dasharray: 30;
+            stroke-dashoffset: 30;
+        }
+
+        .glow-group {
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="spacer"></div>
+    <svg width="827" height="509" viewBox="0 0 827 509" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Small circles -->
+        <circle class="small-circle" cx="1.43666" cy="1.43666" r="1.43666"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 497.38 156.18)" fill="#ACA0E4" fill-opacity="0.15" />
+        <circle class="small-circle" cx="1.43666" cy="1.43666" r="1.43666"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 508.872 110.21)" fill="#7A42EB" fill-opacity="0.2" />
+        <circle class="small-circle" cx="1.43666" cy="1.43666" r="1.43666"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 500.842 313.187)" fill="#ACA0E4" fill-opacity="0.8" />
+
+        <!-- Medium circles -->
+        <circle class="medium-circle" cx="2.1547" cy="2.1547" r="2.1547"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 359.294 335.745)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="medium-circle" cx="2.1547" cy="2.1547" r="2.1547"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 503.606 204.544)" fill="#ACA0E4" fill-opacity="0.15" />
+        <circle class="medium-circle" cx="2.1547" cy="2.1547" r="2.1547"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 310.15 300.314)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="medium-circle" cx="2.1547" cy="2.1547" r="2.1547"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 351.195 251.862)" fill="#ACA0E4" fill-opacity="0.15" />
+        <circle class="medium-circle" cx="2.1547" cy="2.1547" r="2.1547"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 451.477 300.577)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="medium-circle" cx="2.1547" cy="2.1547" r="2.1547"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 480.016 341.537)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="medium-circle" cx="2.1547" cy="2.1547" r="2.1547"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 543.829 256.26)" fill="#7A42EB" fill-opacity="0.4" />
+
+        <!-- Large circle -->
+        <circle class="large-circle" cx="335.244" cy="242.727" r="0.973616" transform="rotate(90 335.244 242.727)"
+            fill="#ACA0E4" fill-opacity="0.8" />
+
+        <!-- Tiny circles -->
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 278.546 35.0316)" fill="#ACA0E4" fill-opacity="0.15" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 311.153 100.313)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 367.367 29.604)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 431.362 199.022)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 333.636 41.2748)" fill="#7A42EB" fill-opacity="0.2" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 324.359 246.769)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 520.288 268.257)" fill="#ACA0E4" fill-opacity="0.15" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 398.547 247.565)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 472.002 23.5392)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 259.477 118.698)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 448.553 125.338)" fill="#7A42EB" fill-opacity="0.4" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 420.286 0.554321)" fill="#ACA0E4" fill-opacity="0.15" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 414.54 333.834)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 371.892 292.078)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 543.487 61.0009)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 364.202 126.932)" fill="#ACA0E4" fill-opacity="0.15" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 500.733 280.203)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 462.631 126.978)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 453.979 105.253)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 437.525 337.665)" fill="#ACA0E4" fill-opacity="0.15" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 557.407 149.012)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 507.91 159.362)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 286.208 343.411)" fill="#ACA0E4" fill-opacity="0.8" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 552.856 296.135)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 450.932 255.303)" fill="#ACA0E4" fill-opacity="0.1" />
+        <circle class="small-circle" cx="0.718035" cy="0.718035" r="0.718035"
+            transform="matrix(7.54979e-08 1 1 -7.54979e-08 464.34 4.38513)" fill="#ACA0E4" fill-opacity="0.8" />
+
+        <!-- Triangle paths -->
+        <path class="triangle-path" d="M516.534 4.38466L518.689 5.62885L518.689 3.14047L516.534 4.38466Z" fill="#7A42EB"
+            fill-opacity="0.2" />
+        <path class="triangle-path" d="M522.28 352.987L524.435 354.232L524.435 351.743L522.28 352.987Z" fill="#ACA0E4"
+            fill-opacity="0.1" />
+
+        <!-- Star/Cross paths -->
+        <path class="star-path"
+            d="M557.649 351.543L558.781 351.847L559.086 352.979L559.391 351.847L560.523 351.543L559.391 351.238L559.086 350.106L558.781 351.238L557.649 351.543Z"
+            fill="#ACA0E4" fill-opacity="0.1" />
+        <path class="star-path"
+            d="M505.042 65.6774L506.174 65.9821L506.478 67.114L506.783 65.9821L507.915 65.6774L506.783 65.3726L506.478 64.2407L506.174 65.3726L505.042 65.6774Z"
+            fill="#7A42EB" fill-opacity="0.2" />
+        <path class="star-path"
+            d="M443.888 174.47L445.019 174.775L445.324 175.907L445.629 174.775L446.761 174.47L445.629 174.165L445.324 173.034L445.019 174.165L443.888 174.47Z"
+            fill="#ACA0E4" fill-opacity="0.1" />
+        <path class="star-path"
+            d="M549.096 105.901L550.228 106.206L550.533 107.338L550.837 106.206L551.969 105.901L550.837 105.596L550.533 104.464L550.228 105.596L549.096 105.901Z"
+            fill="#ACA0E4" fill-opacity="0.2" />
+        <path class="star-path"
+            d="M341.132 125.775L342.264 126.08L342.569 127.212L342.874 126.08L344.006 125.775L342.874 125.471L342.569 124.339L342.264 125.471L341.132 125.775Z"
+            fill="#ACA0E4" fill-opacity="0.15" />
+        <path class="star-path"
+            d="M482.364 248.455L483.495 248.76L483.8 249.892L484.105 248.76L485.237 248.455L484.105 248.151L483.8 247.019L483.495 248.151L482.364 248.455Z"
+            fill="#ACA0E4" fill-opacity="0.8" />
+
+        <!-- Glow effect groups -->
+        <g class="glow-group" style="mix-blend-mode:hard-light" opacity="0.42">
+            <path
+                d="M826.472 141.037C818.644 181.915 793.004 224.551 664.785 245.845C491.771 274.579 418.355 301.637 413.523 417.26C408.676 301.637 335.141 274.579 162.127 245.845C33.9079 224.551 8.26807 181.915 0.440452 141.037C-1.28654 132.018 6.00315 123.999 15.1858 123.999H413.467H413.524H811.727C820.909 123.999 828.199 132.018 826.472 141.037Z"
+                fill="url(#paint0_linear_49_21566)" />
+        </g>
+        <g class="glow-group" style="mix-blend-mode:plus-lighter" opacity="0.66" filter="url(#filter0_f_49_21566)">
+            <path
+                d="M703.465 185.239C697.969 213.943 679.965 243.88 589.933 258.833C468.447 279.009 416.896 298.008 413.503 379.196C410.099 298.008 358.465 279.009 236.979 258.833C146.947 243.88 128.943 213.943 123.447 185.239C122.234 178.907 127.353 173.276 133.801 173.276H413.464H413.503H693.111C699.559 173.276 704.678 178.907 703.465 185.239Z"
+                fill="url(#paint1_linear_49_21566)" />
+        </g>
+        <g class="glow-group" style="mix-blend-mode:plus-lighter" opacity="0.66" filter="url(#filter1_f_49_21566)">
+            <path
+                d="M703.465 185.239C697.969 213.943 679.965 243.88 589.933 258.833C468.447 279.009 416.895 298.008 413.503 379.196C410.099 298.008 358.465 279.009 236.979 258.833C146.947 243.88 128.943 213.943 123.447 185.239C122.234 178.907 127.353 173.276 133.801 173.276H413.464H413.503H693.111C699.559 173.276 704.678 178.907 703.465 185.239Z"
+                fill="url(#paint2_linear_49_21566)" />
+        </g>
+        <g class="glow-group" style="mix-blend-mode:plus-lighter" opacity="0.76" filter="url(#filter2_f_49_21566)">
+            <path
+                d="M703.465 185.239C697.969 213.943 679.965 243.88 589.933 258.833C468.447 279.009 416.895 298.008 413.503 379.196C410.099 298.008 358.465 279.009 236.979 258.833C146.947 243.88 128.943 213.943 123.447 185.239C122.234 178.907 127.353 173.276 133.801 173.276H413.464H413.503H693.111C699.559 173.276 704.678 178.907 703.465 185.239Z"
+                fill="url(#paint3_linear_49_21566)" />
+        </g>
+        <g class="glow-group" style="mix-blend-mode:plus-lighter" opacity="0.58" filter="url(#filter3_f_49_21566)">
+            <path
+                d="M703.465 134.081C697.969 173.456 679.965 214.524 589.933 235.036C468.447 262.714 416.895 288.777 413.503 400.149C410.099 288.777 358.465 262.714 236.979 235.036C146.947 214.524 128.943 173.456 123.447 134.081C122.234 125.394 127.353 117.67 133.801 117.67H413.464H413.503H693.111C699.559 117.67 704.678 125.394 703.465 134.081Z"
+                fill="url(#paint4_linear_49_21566)" />
+        </g>
+        <g class="glow-group" style="mix-blend-mode:plus-lighter" filter="url(#filter4_f_49_21566)">
+            <path
+                d="M691.947 147.759C686.669 185.57 669.38 225.008 582.924 244.705C466.263 271.283 416.759 296.311 413.501 403.26C410.233 296.311 360.65 271.283 243.988 244.705C157.532 225.008 140.243 185.57 134.965 147.759C133.801 139.417 138.716 132 144.908 132H413.464H413.502H682.005C688.196 132 693.112 139.417 691.947 147.759Z"
+                fill="url(#paint5_linear_49_21566)" />
+        </g>
+        <g class="glow-group" style="mix-blend-mode:plus-lighter" filter="url(#filter5_f_49_21566)">
+            <path
+                d="M691.947 115.76C686.669 153.571 669.38 193.008 582.924 212.705C466.263 239.284 416.759 264.312 413.501 371.26C410.233 264.312 360.65 239.284 243.988 212.705C157.532 193.008 140.243 153.571 134.965 115.76C133.801 107.417 138.716 99.9998 144.908 99.9998H413.464H413.502H682.005C688.196 99.9998 693.112 107.417 691.947 115.76Z"
+                fill="url(#paint6_linear_49_21566)" />
+        </g>
+        <defs>
+            <filter id="filter0_f_49_21566" x="20.6608" y="70.6686" width="785.59" height="437.569"
+                filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="51.3035" result="effect1_foregroundBlur_49_21566" />
+            </filter>
+            <filter id="filter1_f_49_21566" x="101.336" y="151.343" width="624.241" height="276.22"
+                filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10.9661" result="effect1_foregroundBlur_49_21566" />
+            </filter>
+            <filter id="filter2_f_49_21566" x="101.336" y="151.343" width="624.241" height="276.22"
+                filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="10.9661" result="effect1_foregroundBlur_49_21566" />
+            </filter>
+            <filter id="filter3_f_49_21566" x="61.7036" y="56.1053" width="703.505" height="441.872"
+                filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="30.7821" result="effect1_foregroundBlur_49_21566" />
+            </filter>
+            <filter id="filter4_f_49_21566" x="94.7935" y="91.9995" width="637.325" height="386.084"
+                filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="20" result="effect1_foregroundBlur_49_21566" />
+            </filter>
+            <filter id="filter5_f_49_21566" x="34.7935" y="-0.000244141" width="757.325" height="506.084"
+                filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_49_21566" />
+            </filter>
+            <linearGradient id="paint0_linear_49_21566" x1="413.456" y1="211.217" x2="413.456" y2="454.907"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#B19AE8" stop-opacity="0" />
+                <stop offset="0.8" stop-color="#B19AE8" />
+            </linearGradient>
+            <linearGradient id="paint1_linear_49_21566" x1="413.456" y1="234.438" x2="413.456" y2="405.631"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6F3FE3" stop-opacity="0.23" />
+                <stop offset="0.8" stop-color="#6F3FE3" />
+            </linearGradient>
+            <linearGradient id="paint2_linear_49_21566" x1="413.456" y1="234.438" x2="413.456" y2="405.631"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6F3FE3" stop-opacity="0" />
+                <stop offset="0.8" stop-color="#6F3FE3" />
+            </linearGradient>
+            <linearGradient id="paint3_linear_49_21566" x1="413.456" y1="234.438" x2="413.456" y2="405.631"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#D9C9FF" stop-opacity="0" />
+                <stop offset="0.8" stop-color="#D9C9FF" />
+            </linearGradient>
+            <linearGradient id="paint4_linear_49_21566" x1="413.456" y1="201.572" x2="413.456" y2="436.413"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#D9C9FF" stop-opacity="0" />
+                <stop offset="0.8" stop-color="#D9C9FF" />
+            </linearGradient>
+            <linearGradient id="paint5_linear_49_21566" x1="413.456" y1="212.57" x2="413.456" y2="438.083"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#D9C9FF" stop-opacity="0" />
+                <stop offset="0.8" stop-color="#A37DFF" />
+            </linearGradient>
+            <linearGradient id="paint6_linear_49_21566" x1="413.456" y1="180.57" x2="413.456" y2="406.084"
+                gradientUnits="userSpaceOnUse">
+                <stop stop-color="#D9C9FF" stop-opacity="0" />
+                <stop offset="0.8" stop-color="#A37DFF" />
+            </linearGradient>
+        </defs>
+    </svg>
+    <div class="spacer"></div>
+
+    <script src="./src/reveal-light-animation.js" type="module"></script>
+    <script type="module">
+        import { autoInitRevealLight } from './src/reveal-light-animation.js';
+        autoInitRevealLight('svg');
+    </script>
+</body>
+
+</html>
