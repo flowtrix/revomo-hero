@@ -24,20 +24,15 @@
             max-height: 800px;
             margin: 2rem auto; /* Center the canvas */
         }
-        .content {
-            padding: 2rem;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
-    <div class="content">
-        <h1>Shimmering Pixel-Grid Animation</h1>
-        <p>Scroll down to see the animation pause when it leaves the viewport.</p>
-    </div>
     <div class="dot-field"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
     <script type="module">
 
@@ -75,6 +70,8 @@
 
             uniform float uTime;
 
+            uniform float uRevealProgress;
+
             void main() {
 
                 vec2 coord = vTextureCoord * uResolution;
@@ -82,12 +79,10 @@
                 // Global circle mask setup
 
                 vec2 canvasCenter = uResolution / 2.5;
-
-                float circleRadius = min(uResolution.x, uResolution.y) * 0.3;
+                float circleRadius = min(uResolution.x, uResolution.y) * 0.3 * uRevealProgress;
+                float circleEdge = circleRadius * 0.7;
 
                 float distToCenter = length(coord - canvasCenter);
-
-                float circleEdge = circleRadius * 0.4;
 
                 float circleMask = smoothstep(circleRadius, circleRadius - circleEdge, distToCenter);
 
@@ -139,6 +134,8 @@
 
             uTime: 0.0,
 
+            uRevealProgress: 0.0,
+
         };
 
         const filter = new PIXI.Filter(undefined, fragmentShader, uniforms);
@@ -175,6 +172,19 @@
 
             uniforms.uTime = time;
 
+        });
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.to(uniforms, {
+          uRevealProgress: 1,
+          duration: 1.5,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: container,
+            start: "top 80%",
+            once: true,
+          }
         });
 
     </script>
