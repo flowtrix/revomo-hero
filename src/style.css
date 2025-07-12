@@ -565,7 +565,7 @@ body {
 }
 
 /* Small Mobile - 220px target (15% reduction from mobile) */
-@media (max-width: 360px) {
+@media (max-width: 390px) {
     .svg-animation-container {
         scale: 0.785 !important;
     }
