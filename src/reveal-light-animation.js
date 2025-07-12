@@ -53,12 +53,12 @@ export class RevealLightAnimation {
 
         this.masterTimeline
             .set(circles, { autoAlpha: 0, scale: 0, transformOrigin: 'center' })
-            .set(paths, { drawSVG: '0%', autoAlpha: 1 })
+            .set(paths, { drawSVG: '0%', autoAlpha: .4 })
             .set(glows, { autoAlpha: 0 });
 
         this.masterTimeline
             .to(circles, {
-                autoAlpha: 1,
+                autoAlpha: .5,
                 scale: 1,
                 duration: 1,
                 ease: 'back.out(1.7)',
