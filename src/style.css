@@ -584,6 +584,25 @@ body {
     }
 }
 
+@media (max-width: 320px) {
+    .svg-animation-container {
+        scale: 0.785 !important;
+    }
+
+    #revomo-animation {
+        top: 120em;
+    }
+
+    #particle-container,
+    #falling-particles {
+        scale: 0.785 !important;
+    }
+
+    .mobile-background-layer {
+        margin-top: 680em;
+    }
+}
+
 /* Hide background layer on tablet and mobile devices */
 @media (max-width: 1239px) {
     .background-layer {
