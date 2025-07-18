@@ -66,7 +66,7 @@ function createPipeAnimations() {
                 duration: 5,
                 ease: "none",
             }, index * 0.5)
-            .to(circle, { autoAlpha: 0, duration: 1 }, (index * 0.5) + 4);
+            .to(circle, { autoAlpha: 0, duration: 1 }, (index * 0.5) + 4.5);
     });
 }
 
