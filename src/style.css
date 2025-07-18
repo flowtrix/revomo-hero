@@ -545,7 +545,7 @@ body {
 }
 
 /* Mobile - 260px target (19% reduction from large phone) */
-@media (max-width: 500px) {
+@media (max-width: 568px) {
     .svg-animation-container {
         scale: 1.012 !important;
     }
@@ -555,7 +555,7 @@ body {
     }
 
     .mobile-background-layer {
-        margin-top: 550em;
+        margin-top: 400em;
     }
 
     #particle-container,
@@ -580,7 +580,7 @@ body {
     }
 
     .mobile-background-layer {
-        margin-top: 680em;
+        margin-top: 520em;
     }
 }
 
