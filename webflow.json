@@ -1,7 +1,9 @@
 {
-  "framework": "vite",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "nodeVersion": "22",
-  "installCommand": "npm install"
+  "cosmic": {
+    "framework": "vite",
+    "buildCommand": "npm run build",
+    "outputDirectory": "dist",
+    "nodeVersion": "22",
+    "installCommand": "npm install"
+  }
 }
