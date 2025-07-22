@@ -1,8 +1,9 @@
 {
-  "name": "datagrid",
+  "name": "revomo-hero",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "Revomo Hero - Interactive particle animations with GSAP and Vite",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
