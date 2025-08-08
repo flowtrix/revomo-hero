@@ -72,11 +72,11 @@ body {
 .drop-shadow {
     position: absolute;
     z-index: 4;
-    width: 500px;
-    height: 210px;
+    width: 350px;
+    height: 100px;
     background: #0d0c14;
-    filter: blur(40px);
-    top: -2.5rem;
+    filter: blur(45px);
+    top: 0.5rem;
 }
 
 #revomo-animation {
@@ -155,10 +155,12 @@ body {
 
 .dollar {
     position: absolute;
+    z-index: 6;
 }
 
 .dollar-one {
-    right: 285px;
+    right: 345px;
+    top: 220px;
 }
 
 .dollar-two {
@@ -167,8 +169,13 @@ body {
 }
 
 .dollar-three {
-    right: 560px;
-    bottom: 10px;
+    left: 530px;
+    top: 110px;
+}
+
+.dollar-four {
+    right: 540px;
+    top: 295px;
 }
 
 /* Rotating animation for the gradient lines */
@@ -613,14 +620,15 @@ body {
 /* Tooltip Text Styling */
 .tooltip-text {
     font-family: 'InterDisplay', sans-serif;
-    font-size: 12px;
+    font-size: 15.5px;
     font-weight: 400;
     color: #9C92C0;
-    line-height: 1.4;
+    line-height: 1.2;
     text-align: center;
     background: transparent;
     user-select: none;
     pointer-events: none;
+    margin-top: 3px;
 }
 
 .tooltip-text.white {
@@ -628,10 +636,10 @@ body {
 }
 
 .tooltip-text.large {
-    font-size: 12px;
+    font-size: 15.5px;
     font-weight: 500;
 }
 
 .tooltip-text.medium {
-    font-size: 12px;
+    font-size: 14.5px;
 }
