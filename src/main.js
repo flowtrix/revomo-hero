@@ -867,52 +867,41 @@ class RevomoAnimationSystem {
         gsap.set(dollarElements, {
             scale: 0,
             opacity: 0,
-            transformOrigin: "center center",
-            force3D: true
+            transformOrigin: "center center"
         });
 
+        const floatElement = (element) => {
+            const moveRange = 15; // The range of movement in pixels
+            const duration = 3 + Math.random() * 3; // Duration of each movement (3-6s)
+
+            gsap.to(element, {
+                x: gsap.utils.random(-moveRange, moveRange, 1),
+                y: gsap.utils.random(-moveRange, moveRange, 1),
+                rotation: gsap.utils.random(-10, 10, 1),
+                duration: duration,
+                ease: "sine.inOut",
+                onComplete: floatElement, // Create a seamless loop
+                onCompleteParams: [element] // Pass the element to the next call
+            });
+        };
+
         // Create staggered spring-like reveal animation
-        const dollarTl = gsap.timeline({ delay: 4.5 }); // Start after main animations
+        const dollarTl = gsap.timeline({
+            delay: 4.5,
+            onComplete: () => {
+                dollarElements.forEach(floatElement);
+            }
+        });
 
         dollarTl.to(dollarElements, {
             scale: 1,
             opacity: 1,
             duration: 0.8,
-            ease: "back.out(2.5)", // Strong spring effect
+            ease: "back.out(2.5)",
             stagger: {
-                amount: 0.6, // Total stagger time
+                amount: 0.6,
                 from: "start"
             }
-        });
-
-        // Create noticeable continuous movement for each dollar element
-        dollarElements.forEach((element) => {
-            const moveDistance = 6 + Math.random() * 6;
-            const duration = 4 + Math.random() * 2;
-            const delay = 5.5 + Math.random() * 1.5;
-
-            // Smooth infinite loop animation without abrupt jumps
-            gsap.to(element, {
-                x: () => (Math.random() - 0.5) * moveDistance,
-                y: () => (Math.random() - 0.5) * moveDistance,
-                duration,
-                ease: "sine.inOut",
-                repeat: -1,
-                yoyo: true,
-                repeatRefresh: true,
-                delay,
-            });
-
-            // Gentle rotation
-            gsap.to(element, {
-                rotation: () => (Math.random() - 0.5) * 10,
-                duration: duration * 1.2,
-                ease: "sine.inOut",
-                repeat: -1,
-                yoyo: true,
-                repeatRefresh: true,
-                delay: delay + 0.5,
-            });
         });
 
         return dollarTl;
