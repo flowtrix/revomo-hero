@@ -867,7 +867,8 @@ class RevomoAnimationSystem {
         gsap.set(dollarElements, {
             scale: 0,
             opacity: 0,
-            transformOrigin: "center center"
+            transformOrigin: "center center",
+            force3D: true
         });
 
         // Create staggered spring-like reveal animation
@@ -885,37 +886,32 @@ class RevomoAnimationSystem {
         });
 
         // Create noticeable continuous movement for each dollar element
-        dollarElements.forEach((element, index) => {
-            // Random movement parameters for each element - increased distances
-            const moveDistance = 8 + Math.random() * 12; // 8-20 pixels movement (much more noticeable)
-            const duration = 2.5 + Math.random() * 1.5; // 2.5-4 seconds per cycle (slightly faster)
-            const delay = Math.random() * 1.5; // Random start delay
+        dollarElements.forEach((element) => {
+            const moveDistance = 6 + Math.random() * 6;
+            const duration = 4 + Math.random() * 2;
+            const delay = 5.5 + Math.random() * 1.5;
 
-            // Create infinite loop animation for noticeable movement
+            // Smooth infinite loop animation without abrupt jumps
             gsap.to(element, {
-                x: `+= ${Math.random() > 0.5 ? moveDistance : -moveDistance}`,
-                y: `+= ${Math.random() > 0.5 ? moveDistance : -moveDistance}`,
-                duration: duration,
+                x: () => (Math.random() - 0.5) * moveDistance,
+                y: () => (Math.random() - 0.5) * moveDistance,
+                duration,
                 ease: "sine.inOut",
                 repeat: -1,
                 yoyo: true,
-                delay: delay + 5.5, // Start after reveal animation completes
-                onRepeat: () => {
-                    // Randomize direction each repeat for organic movement - larger range
-                    const newX = (Math.random() - 0.5) * moveDistance * 2.5; // Increased multiplier
-                    const newY = (Math.random() - 0.5) * moveDistance * 2.5; // Increased multiplier
-                    gsap.set(element, { x: newX, y: newY });
-                }
+                repeatRefresh: true,
+                delay,
             });
 
-            // Add more noticeable rotation animation for dynamic effect
+            // Gentle rotation
             gsap.to(element, {
-                rotation: `+= ${(Math.random() - 0.5) * 12} `,
-                duration: duration * 1.2, // Slightly faster rotation
+                rotation: () => (Math.random() - 0.5) * 10,
+                duration: duration * 1.2,
                 ease: "sine.inOut",
                 repeat: -1,
                 yoyo: true,
-                delay: delay + 6,
+                repeatRefresh: true,
+                delay: delay + 0.5,
             });
         });
 
