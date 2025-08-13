@@ -1,20 +1,20 @@
 {
   "tooltips": {
     "first": {
-      "text": "Market-based pricing model rollout",
+      "text": "Market based pricing rollout",
       "className": "first-tooltip-content"
     },
     "second": {
-      "text": "Saved $75K via tariff driven pricing rules",
+      "text": "$2M margin gain in 6 months",
       "className": "second-tooltip-content"
     },
     "third": {
       "first": {
-        "text": "$2.1M margin",
+        "text": "Saved $75K",
         "className": "third-tooltip-content-one"
       },
       "second": {
-        "text": "in 6 months",
+        "text": "via tariff rules",
         "className": "third-tooltip-content-two"
       }
     }
