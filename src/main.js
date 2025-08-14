@@ -265,26 +265,22 @@ class RevomoAnimationSystem {
         // Get all direct children of inner-hero for stagger effect
         const staggerElements = Array.from(innerHero.children);
 
-        // Set initial state - hidden and scaled down
+        // Set initial state - hidden
         gsap.set(staggerElements, {
             autoAlpha: 0,
-            scale: 0.8,
-            y: 30,
             transformOrigin: "center center"
         });
 
         // Stagger reveal animation
         tl.to(staggerElements, {
             autoAlpha: 1,
-            scale: 1,
-            y: 0,
             duration: 0.8,
             stagger: {
                 amount: 1.2, // Total time for all elements
                 from: "start", // Start from first element
                 ease: "power2.out"
             },
-            ease: "back.out(1.7)"
+            ease: "power2.out"
         }, "stagger-start");
     }
 
@@ -312,9 +308,8 @@ class RevomoAnimationSystem {
         }
 
         // 2.3 Metric Background & Gradient (together)
-        const metricBg = document.querySelectorAll('.metric-background');
         const metricBgGrad = document.querySelectorAll('.metric-background-gradient');
-        const combinedBgElements = [...metricBg, ...metricBgGrad];
+        const combinedBgElements = [...metricBgGrad];
 
         if (combinedBgElements.length > 0) {
             gsap.set(combinedBgElements, { autoAlpha: 0 });
@@ -326,75 +321,12 @@ class RevomoAnimationSystem {
         }
 
         // 2.4 Line Chart Metric Animation with sequential drawing using DrawSVG plugin
-        const strokedMetricElements = document.querySelectorAll('.stroked-metric');
         const otherLineChartElements = [
             ...document.querySelectorAll('.metric'),
             ...document.querySelectorAll('.metric-line'),
             ...document.querySelectorAll('.metric-glow'),
             ...document.querySelectorAll('.metric-glow-light')
         ];
-
-        // Animate stroked-metric with sequential drawing using GSAP DrawSVG plugin
-        if (strokedMetricElements.length > 0) {
-            const validPaths = [];
-            const fallbackElements = [];
-
-            // Set up sequential drawing animation for each stroked-metric path
-            strokedMetricElements.forEach((element, index) => {
-                try {
-                    // Check if it's a path element and has getTotalLength method
-                    if (element.tagName.toLowerCase() === 'path' && typeof element.getTotalLength === 'function') {
-                        const pathLength = element.getTotalLength();
-                        // Always use "4 4" for stroked-metric elements
-                        const originalDashArray = '4 4';
-
-                        // Ensure the element has the correct dash pattern before animation
-                        element.setAttribute('stroke-dasharray', originalDashArray);
-
-                        // Set initial state - start completely hidden using DrawSVG
-                        gsap.set(element, {
-                            drawSVG: "0%", // Start with no stroke visible
-                            autoAlpha: 1,
-                            strokeWidth: element.getAttribute('stroke-width') || '1.5',
-                        });
-
-                        validPaths.push({ element, pathLength, originalDashArray });
-                    } else {
-                        throw new Error('Element is not a valid SVG path or lacks getTotalLength method');
-                    }
-                } catch (error) {
-                    // Fallback to opacity animation for this element
-                    gsap.set(element, { autoAlpha: 0 });
-                    fallbackElements.push(element);
-                }
-            });
-
-            // Create sequential drawing animation for valid paths using DrawSVG
-            if (validPaths.length > 0) {
-                validPaths.forEach(({ element, pathLength, originalDashArray }, index) => {
-                    // Animate from 0% to 100% to create progressive drawing effect
-                    tl.to(element, {
-                        drawSVG: "100%", // Draw from start to end
-                        duration: 2.0, // Duration for drawing animation
-                        ease: "power2.inOut",
-                        onComplete: () => {
-                            // Restore original stroke-dasharray after DrawSVG animation completes
-                            gsap.set(element, { strokeDasharray: originalDashArray });
-                        }
-                    }, `sequence-start+=${0.9 + (index * 0.3)}`); // Stagger each path
-                });
-            }
-
-            // Animate fallback elements with opacity
-            if (fallbackElements.length > 0) {
-                tl.to(fallbackElements, {
-                    autoAlpha: 1,
-                    duration: 0.8,
-                    stagger: 0.1,
-                    ease: "power2.out"
-                }, "sequence-start+=0.9");
-            }
-        }
 
         // Animate line chart elements with DrawSVG sequential drawing animation
         if (otherLineChartElements.length > 0) {
