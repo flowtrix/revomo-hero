@@ -30,8 +30,8 @@
 
 body {
 
-    /* background: #0d0c14; */
-    background: transparent;
+    background: #0d0c14;
+    /* background: transparent; */
     font-family: 'InterDisplay', sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
@@ -635,6 +635,10 @@ body {
     color: white;
 }
 
+.tooltip-text.gray {
+    color: #6F6787;
+}
+
 .tooltip-text.large {
     font-size: 15.5px;
     font-weight: 500;
@@ -642,4 +646,8 @@ body {
 
 .tooltip-text.medium {
     font-size: 14.5px;
+}
+
+.tooltip-text.small {
+    font-size: 12.5px;
 }

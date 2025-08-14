@@ -82,29 +82,6 @@ class RevomoAnimationSystem {
             console.log('Configuration loaded:', this.config);
         } catch (error) {
             console.error('Failed to load configuration:', error);
-            // Fallback configuration
-            this.config = {
-                tooltips: {
-                    first: {
-                        text: "Cost-based price model rollout",
-                        className: "first-tooltip-content"
-                    },
-                    second: {
-                        text: "Saved $30K, via tariff-based pricing",
-                        className: "second-tooltip-content"
-                    },
-                    third: {
-                        first: {
-                            text: "+$2.1M margin",
-                            className: "third-tooltip-content-one"
-                        },
-                        second: {
-                            text: "in 6 months",
-                            className: "third-tooltip-content-two"
-                        }
-                    }
-                }
-            };
         }
     }
 
@@ -150,6 +127,22 @@ class RevomoAnimationSystem {
             console.log('✅ Third tooltip (second) updated:', tooltips.third.second.text);
         } else {
             console.warn('❌ Third tooltip (second) element not found or config missing');
+        }
+
+        const dec = document.querySelector('.dec');
+        if (dec && tooltips.dec) {
+            dec.textContent = tooltips.dec.text;
+            console.log('✅ Dec updated:', tooltips.dec.text);
+        } else {
+            console.warn('❌ Dec element not found or config missing');
+        }
+
+        const jan = document.querySelector('.jan');
+        if (jan && tooltips.jan) {
+            jan.textContent = tooltips.jan.text;
+            console.log('✅ Jan updated:', tooltips.jan.text);
+        } else {
+            console.warn('❌ Jan element not found or config missing');
         }
 
         console.log('✅ All tooltip texts updated from configuration');
@@ -708,7 +701,7 @@ class RevomoAnimationSystem {
         // Create the 3D cards floating down animation
         // Starts 2 seconds after the inner-hero stagger animation begins
         tl.to(backgroundFigures, {
-            autoAlpha: 0.2, // Reveal and set to target opacity
+            autoAlpha: 0.5, // Reveal and set to target opacity
             scale: 1,
             rotationY: 0,
             rotationX: 0,
@@ -771,7 +764,7 @@ class RevomoAnimationSystem {
             const handleHoverLeave = () => {
                 // Reset the hovered figure
                 gsap.to(figure, {
-                    autoAlpha: 0.2,
+                    autoAlpha: 0.5,
                     scale: 1,
                     duration: 0.3,
                     ease: "power2.out"
@@ -781,7 +774,7 @@ class RevomoAnimationSystem {
                 backgroundFigures.forEach((otherFigure, otherIndex) => {
                     if (otherIndex !== index) {
                         gsap.to(otherFigure, {
-                            autoAlpha: 0.2,
+                            autoAlpha: 0.5,
                             duration: 0.3,
                             ease: "power2.out"
                         });
@@ -1409,7 +1402,7 @@ async function initializeRevomoAnimation() {
     }
 
     // Check if containers exist
-    if (!document.getElementById('particle-container')) {
+    if (!document.getElementById('falling-particles')) {
         console.warn('Particle container not found, skipping initialization');
         return;
     }

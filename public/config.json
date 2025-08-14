@@ -17,6 +17,14 @@
         "text": "via tariff rules",
         "className": "third-tooltip-content-two"
       }
+    },
+    "dec": {
+      "text": "Dec 25",
+      "className": "dec"
+    },
+    "jan": {
+      "text": "Jan 25",
+      "className": "jan"
     }
   }
 }
