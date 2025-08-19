@@ -107,16 +107,24 @@ class RevomoAnimationSystem {
             firstTooltipSecond.textContent = tooltips.first.second.text;
             console.log('✅ First tooltip updated:', tooltips.first.second.text);
         } else {
-            console.warn('❌ First tooltip element not found or config missing');
+            console.warn('❌ First tooltip (Second) element not found or config missing');
         }
 
         // Update second tooltip - target the div with both classes
-        const secondTooltip = document.querySelector('.second-tooltip-content.tooltip-text');
-        if (secondTooltip && tooltips.second) {
-            secondTooltip.textContent = tooltips.second.text;
-            console.log('✅ Second tooltip updated:', tooltips.second.text);
+        const secondTooltipFirst = document.querySelector('.second-tooltip-content-one.tooltip-text');
+        if (secondTooltipFirst && tooltips.second && tooltips.second.first) {
+            secondTooltipFirst.textContent = tooltips.second.first.text;
+            console.log('✅ Second tooltip updated:', tooltips.second.first.text);
         } else {
-            console.warn('❌ Second tooltip element not found or config missing');
+            console.warn('❌ Second tooltip (First) element not found or config missing');
+        }
+
+        const secondTooltipSecond = document.querySelector('.second-tooltip-content-two.tooltip-text');
+        if (secondTooltipSecond && tooltips.second && tooltips.second.second) {
+            secondTooltipSecond.textContent = tooltips.second.second.text;
+            console.log('✅ Second tooltip updated:', tooltips.second.second.text);
+        } else {
+            console.warn('❌ Second tooltip (Second) element not found or config missing');
         }
 
         // Update third tooltip - first text
@@ -183,7 +191,8 @@ class RevomoAnimationSystem {
             { name: 'Metric Glow Light', selector: '.metric-glow-light' },
             { name: 'First Tooltip Content One', selector: '.first-tooltip-content-one' },
             { name: 'First Tooltip Content Two', selector: '.first-tooltip-content-two' },
-            { name: 'Second Tooltip Content', selector: '.second-tooltip-content' },
+            { name: 'Second Tooltip Content One', selector: '.second-tooltip-content-one' },
+            { name: 'Second Tooltip Content Two', selector: '.second-tooltip-content-two' },
             { name: 'Third Tooltip Content One', selector: '.third-tooltip-content-one' },
             { name: 'Third Tooltip Content Two', selector: '.third-tooltip-content-two' },
             { name: 'Tooltip Stroke Elements', selector: '.first-tooltip-stroke, .second-tooltip-stroke, .third-tooltip-stroke' }
@@ -417,7 +426,7 @@ class RevomoAnimationSystem {
                 '.second-tooltip-fill',
                 '.second-tooltip-fill-stroke',
             ],
-            content: '.second-tooltip-content'
+            content: '.second-tooltip-content-one, .second-tooltip-content-two'
         }, {
             name: 'Third Tooltip',
             parts: [
