@@ -11,8 +11,14 @@
       }
     },
     "second": {
-      "text": "$2M margin gain in 6 months",
-      "className": "second-tooltip-content"
+      "first": {
+        "text": "$2M margin gain",
+        "className": "second-tooltip-content-one"
+      },
+      "second": {
+        "text": "in 6 months",
+        "className": "second-tooltip-content-two"
+      }
     },
     "third": {
       "first": {
