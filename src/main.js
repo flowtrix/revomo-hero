@@ -94,10 +94,18 @@ class RevomoAnimationSystem {
         const tooltips = this.config.tooltips;
 
         // Update first tooltip - target the div with both classes
-        const firstTooltip = document.querySelector('.first-tooltip-content.tooltip-text');
-        if (firstTooltip && tooltips.first) {
-            firstTooltip.textContent = tooltips.first.text;
-            console.log('✅ First tooltip updated:', tooltips.first.text);
+        const firstTooltipFirst = document.querySelector('.first-tooltip-content-one.tooltip-text');
+        if (firstTooltipFirst && tooltips.first && tooltips.first.first) {
+            firstTooltipFirst.textContent = tooltips.first.first.text;
+            console.log('✅ First tooltip updated:', tooltips.first.first.text);
+        } else {
+            console.warn('❌ First tooltip (First) element not found or config missing');
+        }
+
+        const firstTooltipSecond = document.querySelector('.first-tooltip-content-two.tooltip-text');
+        if (firstTooltipSecond && tooltips.first && tooltips.first.second) {
+            firstTooltipSecond.textContent = tooltips.first.second.text;
+            console.log('✅ First tooltip updated:', tooltips.first.second.text);
         } else {
             console.warn('❌ First tooltip element not found or config missing');
         }
