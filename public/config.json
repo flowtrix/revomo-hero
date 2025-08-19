@@ -1,8 +1,14 @@
 {
   "tooltips": {
     "first": {
-      "text": "Market based pricing rollout",
-      "className": "first-tooltip-content"
+      "first": {
+        "text": "Market based",
+        "className": "first-tooltip-content-one"
+      },
+      "second": {
+        "text": "pricing rollout",
+        "className": "first-tooltip-content-two"
+      }
     },
     "second": {
       "text": "$2M margin gain in 6 months",
