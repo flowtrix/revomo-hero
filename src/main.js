@@ -181,7 +181,8 @@ class RevomoAnimationSystem {
             { name: 'Metric Line', selector: '.metric-line' },
             { name: 'Metric Glow', selector: '.metric-glow' },
             { name: 'Metric Glow Light', selector: '.metric-glow-light' },
-            { name: 'First Tooltip Content', selector: '.first-tooltip-content' },
+            { name: 'First Tooltip Content One', selector: '.first-tooltip-content-one' },
+            { name: 'First Tooltip Content Two', selector: '.first-tooltip-content-two' },
             { name: 'Second Tooltip Content', selector: '.second-tooltip-content' },
             { name: 'Third Tooltip Content One', selector: '.third-tooltip-content-one' },
             { name: 'Third Tooltip Content Two', selector: '.third-tooltip-content-two' },
@@ -406,7 +407,7 @@ class RevomoAnimationSystem {
                 '.first-tooltip-fill',
                 '.first-tooltip-fill-stroke',
             ],
-            content: '.first-tooltip-content'
+            content: '.first-tooltip-content-one, .first-tooltip-content-two'
         }, {
             name: 'Second Tooltip',
             parts: [
