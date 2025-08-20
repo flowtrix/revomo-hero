@@ -1,25 +1,28 @@
 @font-face {
-  font-family: 'InterDisplay';
-  font-style: normal;
-  font-weight: 400;
-  src: url('/fonts/InterDisplay-Regular.woff2') format('woff2'),
-       url('/fonts/InterDisplay-Regular.woff') format('woff');
+    font-family: "InterDisplay";
+    font-style: normal;
+    font-weight: 400;
+    src:
+        url("/fonts/InterDisplay-Regular.woff2") format("woff2"),
+        url("/fonts/InterDisplay-Regular.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'InterDisplay';
-  font-style: normal;
-  font-weight: 500;
-  src: url('/fonts/InterDisplay-Medium.woff2') format('woff2'),
-       url('/fonts/InterDisplay-Medium.woff') format('woff');
+    font-family: "InterDisplay";
+    font-style: normal;
+    font-weight: 500;
+    src:
+        url("/fonts/InterDisplay-Medium.woff2") format("woff2"),
+        url("/fonts/InterDisplay-Medium.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'InterDisplay';
-  font-style: normal;
-  font-weight: 600;
-  src: url('/fonts/InterDisplay-SemiBold.woff2') format('woff2'),
-       url('/fonts/InterDisplay-SemiBold.woff') format('woff');
+    font-family: "InterDisplay";
+    font-style: normal;
+    font-weight: 600;
+    src:
+        url("/fonts/InterDisplay-SemiBold.woff2") format("woff2"),
+        url("/fonts/InterDisplay-SemiBold.woff") format("woff");
 }
 
 * {
@@ -29,10 +32,9 @@
 }
 
 body {
-
     /* background: #0d0c14; */
     background: transparent;
-    font-family: 'InterDisplay', sans-serif;
+    font-family: "InterDisplay", sans-serif;
     overflow-x: hidden;
     min-height: 100vh;
     font-size: 0.5208333333vw;
@@ -149,7 +151,7 @@ body {
 #inner-hero {
     position: absolute;
     z-index: 2;
-    background-color: #050A12;
+    background-color: #050a12;
     border-radius: 100%;
 }
 
@@ -311,7 +313,10 @@ body {
     position: absolute;
     top: 0;
     cursor: pointer;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+    transition:
+        opacity 0.3s ease-in-out,
+        transform 0.3s ease-in-out,
+        filter 0.3s ease-in-out;
     z-index: 2;
     overflow: hidden;
     /* opacity and pointer-events managed by GSAP for performance */
@@ -449,6 +454,18 @@ body {
     top: 66.5em;
 }
 
+@media (max-width: 1680px) {
+    .background-layer-left {
+        transform: translateX(-12em);
+    }
+
+    .background-layer-right {
+        transform: translateX(12em);
+    }
+}
+
+
+
 @media (max-width: 1440px) {
     .two {
         left: -10em;
@@ -498,7 +515,6 @@ body {
         right: -8.5em;
     }
 }
-
 
 /* Responsive Design - Scale-based approach for better performance */
 
@@ -619,10 +635,10 @@ body {
 
 /* Tooltip Text Styling */
 .tooltip-text {
-    font-family: 'InterDisplay', sans-serif;
+    font-family: "InterDisplay", sans-serif;
     font-size: 15.5px;
     font-weight: 400;
-    color: #9C92C0;
+    color: #9c92c0;
     line-height: 1.2;
     text-align: center;
     background: transparent;
@@ -636,7 +652,7 @@ body {
 }
 
 .tooltip-text.gray {
-    color: #6F6787;
+    color: #6f6787;
 }
 
 .tooltip-text.large {
