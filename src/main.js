@@ -224,19 +224,18 @@ class RevomoAnimationSystem {
         gsap.set("#rotating-lines", {
             opacity: 0
         });
-
         // Main fade-in reveal animation - 2 seconds duration
         // The entire SVG container fades in over 2 seconds
         tl.to("#revomo-animation", {
             autoAlpha: 1,
-            duration: 2,
+            duration: 1,
             ease: "power2.out",
-            delay: 0.5 // Small delay to see the effect clearly
         });
 
         tl.to("#rotating-lines", {
             opacity: 1,
-            duration: 0.1,
+            duration: 1,
+            animation: "rotate 5s",
             ease: "power2.out",
         });
     }

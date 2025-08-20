@@ -182,9 +182,6 @@ body {
 
 /* Rotating animation for the gradient lines */
 #rotating-lines {
-    opacity: 0;
-    animation: rotate 5s;
-    animation-delay: 2.1s;
     transform-origin: 339.621px 338.994px;
 }
 
