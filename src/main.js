@@ -242,7 +242,7 @@ class RevomoAnimationSystem {
 
     createAdvancedSVGAnimations() {
         // Create advanced timeline for SVG elements
-        const advancedTl = gsap.timeline({ delay: 2.8 }); // Start after main animation
+        const advancedTl = gsap.timeline({ delay: 2.3 });
 
         // 1. Stagger reveal-in animation for #inner-hero
         this.createStaggerRevealAnimation(advancedTl);
@@ -379,14 +379,13 @@ class RevomoAnimationSystem {
             // All elements (.metric, .metric-line, .metric-glow, .metric-glow-light) use same duration and timing
             if (drawingSVGElements.length > 0) {
                 const drawingDuration = 2.0; // Same duration for all elements
-                const startDelay = 2.1; // Same start timing as original
+                const startDelay = 1; // Same start timing as original
 
                 drawingSVGElements.forEach(({ element, pathLength, index }) => {
                     // Animate from 0% to 100% to create progressive drawing effect
                     tl.to(element, {
                         drawSVG: "100%", // Draw from start to end
                         duration: drawingDuration, // Same duration for all elements
-                        ease: "power2.inOut"
                     }, `sequence-start+=${startDelay}`); // Same timing for all elements - no stagger
                 });
             }
@@ -439,10 +438,10 @@ class RevomoAnimationSystem {
             content: '.third-tooltip-content-one, .third-tooltip-content-two'
         }];
 
-        const tooltipDelay = 1.0; // Delay between each tooltip animation
+        const tooltipDelay = 0.4; // Delay between each tooltip animation
 
         tooltips.forEach((tooltip, index) => {
-            const startTime = `sequence-start+=${2.4 + (index * tooltipDelay)}`;
+            const startTime = `sequence-start+=${1 + (index * tooltipDelay)}`;
             const tooltipParts = document.querySelectorAll(tooltip.parts.join(', '));
             const tooltipContent = document.querySelectorAll(tooltip.content);
 
