@@ -31,11 +31,11 @@
       }
     },
     "dec": {
-      "text": "Dec 25",
+      "text": "Dec 26",
       "className": "dec"
     },
     "jan": {
-      "text": "Jan 25",
+      "text": "Jan 26",
       "className": "jan"
     }
   }
